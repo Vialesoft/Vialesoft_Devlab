@@ -1,4 +1,11 @@
+# Imagen de Python
 FROM python:3.8
+
+# Setea el directorio de trabajo
 WORKDIR /app
-COPY hola_mundo.py
-CMD ["pyhton", "-u", "hola_mundo.py"]
+
+# Copia en /app el archivo
+COPY hola_mundo.py .
+
+# Comando que ejecuta al hacer docker run
+CMD ["python", "-u", "hola_mundo.py"]
