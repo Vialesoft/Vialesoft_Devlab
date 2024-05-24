@@ -5,3 +5,5 @@ print("HOLA MUNDO")
 # docker ps -> Contenedores coriendo
 # docker ps -a -> Historial de contenedores
 # docker rm [id] -> remove
+# docker stop [idContainer]
+# docker --version
