@@ -205,8 +205,45 @@ Ejercicio 26
 ------------------
 Dado un número, devolver su serie de Fibonacci
 
+Ejercicio 27
+------------------
+Dado un número, mostrar a cuántos años, meses y días equivale
 
+Ej: calcularDias(920); //Equivale a 2 años, 6 meses y 10 días
 
+Ejercicio 28
+------------------
+Dado un número, devolver su factorial
 
+Ejercicio 29
+------------------
+Dado un número, devolver si es un número capicúa
 
+Ejercicio 30
+------------------
+Dado un array, devolverlo sin elementos duplicados
+Si hay un string, eliminarlo del array
 
+Ejercicio 31
+------------------
+Dado un numero, indicar qué tipo de angulo es
+
+Ejercicio 32
+------------------
+Dado un array de números, devolver el array con sus elementos elevados al cuadrado
+
+Ejercicio 33
+------------------
+Haz un reloj que muestre la hora en tiempo real a cada segundo
+
+Ejercicio 34
+------------------
+Dados dos números, devolver suma, resta, producto y división entre ellos
+
+Ejercicio 35
+------------------
+Dado un array, devolver un array con el primer y el último elementos
+
+Ejercicio 36
+------------------
+Dado un texto, devolver cuántas vocales y consonantes tiene

@@ -4,4 +4,4 @@ function fraseEnMayuscula(frase){
     return frase;
 }
 
-console.log(fraseEnMayuscula("puto el que lee"));
+console.log(fraseEnMayuscula("hola soy una frase en minúscula"));

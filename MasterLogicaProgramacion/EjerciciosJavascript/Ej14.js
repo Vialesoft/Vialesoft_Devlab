@@ -10,4 +10,4 @@ function repetirTexto(texto, rep) {
     return textoRet;
 }
 
-console.log(repetirTexto("soyputo", 5));
+console.log(repetirTexto("textoRepetido", 5));
