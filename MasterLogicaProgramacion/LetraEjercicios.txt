@@ -265,6 +265,10 @@ Ejercicio 40
 ------------------
 Dado un array de números, devolver el más alto y el más bajo
 
+Ejercicio 41
+------------------
+Dado un número, mostrar un triángulo de asteriscos con esa cantidad de filas
+
 ----------------------------------------------------------------------------------
 
 Ejercicio 101
