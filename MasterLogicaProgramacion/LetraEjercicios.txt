@@ -247,3 +247,20 @@ Dado un array, devolver un array con el primer y el último elementos
 Ejercicio 36
 ------------------
 Dado un texto, devolver cuántas vocales y consonantes tiene
+
+Ejercicio 37
+------------------
+Dado un array o un texto, devolver el elemento o palabra que más veces aparece
+
+Ejercicio 38
+------------------
+Dado un número, mostrar el listado de todos los cuadrados naturales desde el 1 hasta el número
+Ej: cuadrados(5) = [1,4,9,16];
+
+Ejercicio 39
+------------------
+Dado un texto, comprobar que sea un email válido
+
+Ejercicio 40
+------------------
+Dado un array de números, devolver el más alto y el más bajo
