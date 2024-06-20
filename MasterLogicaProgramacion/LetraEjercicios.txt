@@ -264,3 +264,9 @@ Dado un texto, comprobar que sea un email válido
 Ejercicio 40
 ------------------
 Dado un array de números, devolver el más alto y el más bajo
+
+----------------------------------------------------------------------------------
+
+Ejercicio 101
+------------------
+Dada una cadena de números, encontrar el numero mas grande de 2 digitos
