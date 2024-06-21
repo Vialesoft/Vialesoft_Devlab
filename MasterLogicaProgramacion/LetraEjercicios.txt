@@ -269,6 +269,25 @@ Ejercicio 41
 ------------------
 Dado un número, mostrar un triángulo de asteriscos con esa cantidad de filas
 
+Ejercicio 42
+------------------
+Obtener un número random, dados un número mínimo y un número máximo
+
+Ejercicio 43
+------------------
+Obtener la media de un array de números
+
+Ejercicio 44
+------------------
+Dado una array con textos, devolver todas las cadenas conformadas por dos palabras
+
+Ejercicio 45
+------------------
+Dado una array con alumnos (nombre y nota), mostrar cuántos suspendieron y cuántos aprobaron
+
+Ejercicio 46
+------------------
+Dado una cadena, devolver todos sus posibles substrings
 ----------------------------------------------------------------------------------
 
 Ejercicio 101
