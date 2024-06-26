@@ -1,0 +1,42 @@
+<h2>{{titulo}}</h2>
+
+<p> Añadir marca</p>
+<input type="text" [(ngModel)]="soyLaMarca" />
+<button (click)="getMarca()">GETEÁ LA MARCA</button>
+<p>{{soyLaMarca}}</p>
+
+
+<p>Nuestras marcas O-RI-GI-NALES</p>
+
+<ul>
+    <li *ngFor="let marca of marcasZapatillas; let indice = index">
+        {{indice + ' - ' + marca}}
+        <button (click)="borrarMarca(indice)">Borrar</button>
+
+    </li>
+</ul>
+
+<p>Nuestros productos ORIGINALES NENE</p>
+<ul>
+    <li *ngFor="let zapatilla of zapatillas">
+        <span [ngStyle]="
+            {'text-decoration': !zapatilla.enStock ? 'line-through' : 'none'}">
+            {{zapatilla.nombre}} - <strong>$ {{zapatilla.precio}}</strong>
+        </span>
+
+        <span *ngIf="zapatilla.precio <= 400"
+            [style.background]="zapatilla.precio <= 400 ? 'green' : 'transparent'"
+            [style.color]="zapatilla.precio <= 400 ? 'white' : 'transparent'">
+            <b>BARATO CIBER LUNES BLACK FRIDAY</b>
+        </span>
+    </li>
+</ul>
+
+<p>Color: </p>
+<ul [ngSwitch]="color">
+    <li *ngSwitchCase="'yellow'"><span style="background: {{color}}">AMARILLO</span></li>
+    <li *ngSwitchCase="'orange'"><span style="background: {{color}}">NARANJA</span></li>
+    <li *ngSwitchCase="'red'"><span style="background: {{color}}">ROJITO</span></li>
+</ul>
+
+<input type="text" [(ngModel)]="color" />

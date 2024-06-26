@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# SQL Server Management Studio Solution File, Format Version 18.00
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "CursoUdemySQL", "CursoUdemySQL\CursoUdemySQL.ssmssqlproj", "{68F2B69B-66C4-4C5A-895B-A6A99FF9D17D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Default|Default = Default|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68F2B69B-66C4-4C5A-895B-A6A99FF9D17D}.Default|Default.ActiveCfg = Default
+		{612CC3CD-4B4F-4802-BBCF-E411B233F792}.Default|Default.ActiveCfg = Default
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67D642D7-0303-418B-80C7-D96F8023EDF5}
+	EndGlobalSection
+EndGlobal

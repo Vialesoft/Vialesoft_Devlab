@@ -1,0 +1,14 @@
+Juego funciona correctamente (cumple con las reglas establecidas) --> 75%
+Código bien presentado (nombres de variables, legible, ordenado) --> 10%
+Código no se rompe --> 15%
+
+
+Extras -->
+
+## Pauta de evaluación:
+
++ [  0%] El código no compila. La entrega no se hizo, está corrupta o infectada de malware. La entrega no se condice con lo solicitado.
++ [ 30%] El código compila, pero más de la mitad de las funciones no están implementadas o fallan al ejecutarse.
++ [ 60%] El código compila y funciona salvando errores esporádicos.
++ [ 80%] El código compila, funciona, y es eficiente. No hay errores de ejecución y todo lo que se pide está implementado.
++ [100%] El código compila, funciona, es eficiente y está limpio y prolijo. Todo lo solicitado está implementado y funciona sin errores.

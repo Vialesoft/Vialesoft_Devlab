@@ -1,0 +1,15 @@
+<h1>Página principal</h1>
+
+<div *ngIf="identificado; then divLogueado else divNoLogueado">
+    
+</div>
+
+<ng-template #divLogueado>
+    <h3>Hola tengo tu ID</h3>
+    <button (click)="unsetIdentificado();">SALIR</button>
+</ng-template>
+
+<ng-template #divNoLogueado>
+    <p>IDENTIFICATE</p>
+    <button (click)="setIdentificado();">IDENTIFICARSE</button>
+</ng-template>

@@ -1,0 +1,137 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F9F0EB1D-BFC9-42CC-9FAB-810EA27DAA12}|Education.Persistence\\Education.Persistence.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.persistence\\educationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F9F0EB1D-BFC9-42CC-9FAB-810EA27DAA12}|Education.Persistence\\Education.Persistence.csproj|solutionrelative:education.persistence\\educationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03F4235B-2EDD-44BB-9A5C-017CB624E5E2}|Education.API\\Education.API.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03F4235B-2EDD-44BB-9A5C-017CB624E5E2}|Education.API\\Education.API.csproj|solutionrelative:education.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA79A948-B0C4-4656-8531-143FA40D8D35}|Education.Domain\\Education.Domain.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.domain\\dateinfutureattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA79A948-B0C4-4656-8531-143FA40D8D35}|Education.Domain\\Education.Domain.csproj|solutionrelative:education.domain\\dateinfutureattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA79A948-B0C4-4656-8531-143FA40D8D35}|Education.Domain\\Education.Domain.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.domain\\curso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA79A948-B0C4-4656-8531-143FA40D8D35}|Education.Domain\\Education.Domain.csproj|solutionrelative:education.domain\\curso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7A77B6D-1368-4BE4-97C0-BD699AEC4DA8}|Education.Application\\Education.Application.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.application\\cursos\\getcursoquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7A77B6D-1368-4BE4-97C0-BD699AEC4DA8}|Education.Application\\Education.Application.csproj|solutionrelative:education.application\\cursos\\getcursoquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7A77B6D-1368-4BE4-97C0-BD699AEC4DA8}|Education.Application\\Education.Application.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.application\\dto\\cursodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7A77B6D-1368-4BE4-97C0-BD699AEC4DA8}|Education.Application\\Education.Application.csproj|solutionrelative:education.application\\dto\\cursodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7A77B6D-1368-4BE4-97C0-BD699AEC4DA8}|Education.Application\\Education.Application.csproj|c:\\users\\amamberto\\downloads\\testing .net\\testing .net\\solutioncqrscoso\\education.application\\mapping\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7A77B6D-1368-4BE4-97C0-BD699AEC4DA8}|Education.Application\\Education.Application.csproj|solutionrelative:education.application\\mapping\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.API\\Program.cs",
+              "RelativeDocumentMoniker": "Education.API\\Program.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.API\\Program.cs",
+              "RelativeToolTip": "Education.API\\Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:25:51.416Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DateInFutureAttribute.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Domain\\DateInFutureAttribute.cs",
+              "RelativeDocumentMoniker": "Education.Domain\\DateInFutureAttribute.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Domain\\DateInFutureAttribute.cs",
+              "RelativeToolTip": "Education.Domain\\DateInFutureAttribute.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:25:29.124Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GetCursoQuery.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Application\\Cursos\\GetCursoQuery.cs",
+              "RelativeDocumentMoniker": "Education.Application\\Cursos\\GetCursoQuery.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Application\\Cursos\\GetCursoQuery.cs",
+              "RelativeToolTip": "Education.Application\\Cursos\\GetCursoQuery.cs",
+              "ViewState": "AQIAAAsAAAAAAAAAAAAAABcAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:24:21.85Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Curso.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Domain\\Curso.cs",
+              "RelativeDocumentMoniker": "Education.Domain\\Curso.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Domain\\Curso.cs",
+              "RelativeToolTip": "Education.Domain\\Curso.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:24:21.913Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CursoDTO.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Application\\DTO\\CursoDTO.cs",
+              "RelativeDocumentMoniker": "Education.Application\\DTO\\CursoDTO.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Application\\DTO\\CursoDTO.cs",
+              "RelativeToolTip": "Education.Application\\DTO\\CursoDTO.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:24:21.917Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Application\\Mapping\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "Education.Application\\Mapping\\MappingProfile.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Application\\Mapping\\MappingProfile.cs",
+              "RelativeToolTip": "Education.Application\\Mapping\\MappingProfile.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAA8AAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:24:21.92Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EducationDBContext.cs",
+              "DocumentMoniker": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Persistence\\EducationDBContext.cs",
+              "RelativeDocumentMoniker": "Education.Persistence\\EducationDBContext.cs",
+              "ToolTip": "C:\\Users\\amamberto\\Downloads\\Testing .NET\\Testing .NET\\SolutionCQRSCoso\\Education.Persistence\\EducationDBContext.cs",
+              "RelativeToolTip": "Education.Persistence\\EducationDBContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACEAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-26T14:24:21.923Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

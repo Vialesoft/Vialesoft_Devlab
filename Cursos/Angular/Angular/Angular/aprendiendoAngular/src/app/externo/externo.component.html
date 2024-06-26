@@ -1,0 +1,34 @@
+<!-- //{{fecha | date:'fullDate'}} -->
+{{fecha | date:'dd/MM/yyyy'}} <br />
+{{ mensaje | lowercase}} <br />
+{{ mensaje | uppercase}}
+{{ 4 | calculadora: 2}}
+
+ <hr>
+<input type="text" [(ngModel)]="userId" (keyup.enter)="cargaUsuario();" />
+
+<div *ngIf="user">
+    <img src="{{user.avatar}}" width="200px" />
+    <h2>{{user.first_name + ' ' + user.last_name}}</h2>
+</div>
+
+<hr>
+
+<h2>NUEVO USUARIO LOL</h2>
+<form #nuevoUsuario="ngForm" (ngSubmit)="onSubmit(nuevoUsuario)">
+    <p>
+        <label for="txtNombre">Nombre</label>
+        <input type="text" name="txtNombre" #nombre="ngModel" [(ngModel)]="nuevo_usuario.name" />
+        <span *ngIf="nombre.touched && !nombre.valid" style="color:red;">*Nombreeee</span> <br/>
+    </p>
+
+    <p>
+        <label for="txtJob">SHOB</label>
+        <input type="text" name="txtJob" #job="ngModel" [(ngModel)]="nuevo_usuario.job" />
+        <span *ngIf="job.touched && !job.valid" style="color:red;">*SHOOOOOB</span> <br/>
+    </p>
+
+    <input type="submit" value="Guardame esta" [disabled]="!nuevoUsuario.form.valid" />
+
+</form>
+
