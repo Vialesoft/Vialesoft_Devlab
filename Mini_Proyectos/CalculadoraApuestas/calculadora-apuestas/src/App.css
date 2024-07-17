@@ -1,0 +1,14 @@
+.App {
+  padding-top: 36px;
+  text-align: center;
+}
+
+.divFiltros {
+  display: flex;
+  justify-content: center;
+}
+
+select.selectCOMBO,
+input.inputFiltro {
+  width: 315px;
+}

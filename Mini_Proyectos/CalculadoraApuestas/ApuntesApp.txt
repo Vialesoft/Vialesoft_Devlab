@@ -1,0 +1,35 @@
+1) Crear la aplicación:
+"create-react-app calculadora-apuestas" --> Esto demora un montón
+
+2) En la carpeta "calculadora-apuestas"
+"npm run"
+
+3) Instalar Bulma --> "save y save-exact" permiten que si se va a descargar más adelante, se descargue exactamente la versión que se instaló al principio
+"npm install bulma --save --save-exact"
+
+Importante:
+-----------------
+- Cada componente debe importar la librería de react
+    "import React from 'react'"
+
+- Siempre que se use el "Constructor", se debe llamar a "super(props);" y NUNCA se debe llamar al setState
+- CUANDO SE BAJA DE GIT:
+    NPM install
+    NPM run
+
+- AL INSTALAR UN PAQUETE
+    --save --save-exact --> Permite guardar la versión exacta que se quiere usar
+
+Datos sobre el ciclo de vida de los componentes:
+---------------------------------------------------
+https://reactjs.org/docs/react-component.html
+https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
+
+"componentDidMount" --> Evento ideal para hacer una llamada a algún endpoint (llamada a la API de las películas en el buscador, por ejemplo)
+
+
+
+BUGS:
+- Se rompe al seleccionar el "sin seleccionar" del primer combo
+- Validar que la entrada en "Monto" y "Apuesta" sea válida
+
