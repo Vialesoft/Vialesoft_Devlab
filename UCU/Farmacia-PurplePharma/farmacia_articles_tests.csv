@@ -1,0 +1,30 @@
+id;fecha_creacion;ultima_actualizacion;precio;descripcion_corta;descripcion_larga;estado;refrigerado;requiere_receta;vencimiento;categoria
+100002;1900-01-01 00:00:00;2016-09-23 16:30:18;1190;CRISAN SH.SUAVE    250ML.;CRISAN SH.SUAVE    250ML.                                                                          ;Activo;false;false;2008;Anticonvúlsivo 
+100003;1995-03-27 00:00:00;2016-09-23 16:30:18;1430;CRISAN SH. 2 EN 1  250ML.;CRISAN SH. 2 EN 1  250ML.                                                                          ;Activo;false;false;2009;Ansiolítico 
+100004;1995-03-27 00:00:00;2016-09-23 16:30:18;2250;CRISAN SH.INTENSIV.200ML.;CRISAN SH.INTENSIV.200ML.                                                                          ;Activo;false;false;2022;Broncodilatador 
+100011;1900-01-01 00:00:00;2016-09-23 16:30:18;1190;WELLA FORM CR. 55GR.;WELLA FORM CREMA 55 GRAMOS                                                                         ;Activo;false;false;2011;Quimioterápico 
+100013;1900-01-01 00:00:00;2016-09-23 16:30:18;2000;WELLA SP.310GR.;WELLA SPRAY CLASICA 310ML.                                                                         ;Activo;false;false;2023;Hormonoterápico 
+100015;1900-01-01 00:00:00;2016-09-23 16:30:18;740;N.WAVE BAL.ACO.150ML.;N.WAVE BAL.ACO.150ML.                                                                              ;Activo;false;false;2038;Antídoto 
+100024;1900-01-01 00:00:00;2016-09-23 16:30:18;1550;LADYBEL C/NEUTRATEX 110ML;LADYBEL CON NEUTRATEX 100ML.                                                                       ;Activo;false;false;2026;Anticonvulsivo 
+100026;1990-11-15 00:00:00;2016-09-23 16:30:18;1990;KLTN GEL 5/35ARENA CALID.;;Activo;false;false;2007;Ansiolítico 
+100027;1900-01-01 00:00:00;2016-09-23 16:30:18;1990;KLTN GEL 7/35ARENA DORADO;KLTN GEL 7/35ARENA DORADO                                                                          ;Activo;false;false;2021;Broncodilatador 
+10003;1900-01-01 00:00:00;2016-09-23 16:30:18;5990;VAXIGRIP AMP. 1DS.;VAXIGRIP AMP. 1DS.                                                                                 ;Activo;true;false;2015;Quimioterápico 
+100034;1984-06-11 00:00:00;2016-09-23 16:30:18;1290;BLONDOR MANZANILLA 20GR  ;BLONDOR 1+3 POLVO 20 GRAMOS                                                                        ;Activo;false;false;2013;Hormonoterápico 
+100053;2002-10-15 00:00:00;2016-09-23 16:30:18;450;WELLA ACT.COLOR 20VOL.50M;KOLESTON ACTIVADOR DE COLOR 20 VOLUMEN 50ML.                                                       ;Activo;false;false;2010;Antídoto 
+10007;2002-12-05 00:00:00;2016-09-23 16:30:18;9440;NOOTROPYL COM.800MG. 15;NOOTROPYL COMPRIMIDOS 800 MILIGRAMOS  15                                                           ;Activo;false;false;2030;Anticonvulsivo 
+100075;1986-11-10 00:00:00;2016-09-23 16:30:18;1880;N.WAVE LACA SP.150ML.;N.WAVE LACA SP.150ML.                                                                              ;Activo;false;false;2030;Ansiolítico 
+100087;1984-06-11 00:00:00;2016-09-23 16:30:19;870;LANOWELLON A C/NEUTRA.110;;Activo;false;false;2040;Broncodilatador 
+100088;1984-06-11 00:00:00;2016-09-23 16:30:19;870;LANOWELLON C C/NEUTRA.110;;Activo;false;false;2022;Quimioterápico 
+100102;1900-01-01 00:00:00;2016-09-23 16:30:19;1220;N.WAVE WET GEL 120GR.;N.WAVE WET GEL 120GR.                                                                              ;Activo;false;false;2010;Hormonoterápico 
+10013;2002-11-05 00:00:00;2016-09-23 16:30:18;16940;NOOTROPYL CAP.400MG. 60;NOOTROPYL CAPSULAS 400 MILIGRAMOS  60                                                              ;Activo;false;false;2010;Antídoto 
+10014;1980-05-11 00:00:00;2016-09-23 16:30:19;20790;NOOTROPYL COM.800MG. 30  ;NOOTROPYL COMPRIMIDOS 800 MILIGRAMOS  30                                                           ;Activo;false;false;2040;Anticonvulsivo 
+10017;1900-01-01 00:00:00;2016-09-23 16:30:19;12445;NOOTROPYL JBE.120ML.;NOOTROPYL JBE.120ML.                                                                               ;Activo;false;false;2007;Ansiolítico 
+100172;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  1/0 NEGRO AZULA;KLTN 1+1  1/0 NEGRO AZULA                                                                          ;Activo;false;false;2014;Broncodilatador 
+100173;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  2/0 NEGRO;KOLESTON 1+1 2/0 NEGRO                                                                             ;Activo;false;false;2028;Quimioterápico 
+100174;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  3/0 CAST.OSCURO;KOLESTON 1+1 3/0 CASTANO OSCURO                                                                    ;Activo;false;false;2017;Hormonoterápico 
+100175;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  4/0 CAST.MEDIAN;KOLESTON 1+1 4/0 CASTANO MEDIANO                                                                   ;Activo;false;false;2020;Antídoto 
+100176;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  5/0 CAST.CLARO;KOLESTON 1+1 5/0 CASTANO CLARO                                                                     ;Activo;false;false;2035;Anticonvulsivo 
+100177;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  6/0 RUB.OSCURO;KOLESTON 1+1 6/0 RUBIO OSCURO                                                                      ;Activo;false;false;2012;Ansiolítico 
+100178;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  7/0 RUB.MEDIANO;KOLESTON 1+1 7/0 RUBIO MEDIANO                                                                     ;Activo;false;false;2017;Broncodilatador 
+100179;1900-01-01 00:00:00;2016-09-23 16:30:19;2190;KLTN 1+1  8/0 RUB.CLARO;KOLESTON 1+1 8/0 RUBIO CLARO                                                                       ;Activo;false;false;2025;Quimioterápico 
+10018;1900-01-01 00:00:00;2016-09-23 16:30:19;4420;ASTIN-B INH.BUC.200DS.;ASTIN-B INH.BUC.200DS.                                                                             ;Activo;false;false;2034;Hormonoterápico
