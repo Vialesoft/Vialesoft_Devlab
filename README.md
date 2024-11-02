@@ -1,6 +1,9 @@
-## Done or in course Courses
+## Done Courses
 
 - [Data Engineering (Coderhouse)](Cursos/Data_Engineering/Readme.md)
+
+## Coursing
+
 - [Python ML Course (Udemy)](https://github.com/Lithium582/python-ml-course)
 
 ## Useful links
