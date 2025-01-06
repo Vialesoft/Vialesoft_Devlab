@@ -18,7 +18,7 @@ from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.contrib.hooks.snowflake_hook import SnowflakeHook
-from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
+from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator
 import snowflake.connector as sf
 import pandas as pd
 import time
@@ -62,23 +62,17 @@ with DAG('FOOTBAL_LEAGUES',
                                     python_callable=extract_info,
                                     op_kwargs={"df":df,"df_team":df_team})
 
-         upload_stage = SnowflakeOperator(
+         upload_stage = SQLExecuteQueryOperator(
                     task_id='upload_data_stage',
                     sql='./queries/upload_stage.sql',
-                    snowflake_conn_id='demo_conn',
-                    warehouse=params_info["DWH"],
-                    database=params_info["DB"],
-                    role=params_info["ROLE"],
+                    conn_id='demo_conn',
                     params=params_info
                     )
 
-         ingest_table = SnowflakeOperator(
+         ingest_table = SQLExecuteQueryOperator(
                     task_id='ingest_table',
                     sql='./queries/upload_table.sql',
-                    snowflake_conn_id='demo_conn',
-                    warehouse=params_info["DWH"],
-                    database=params_info["DB"],
-                    role=params_info["ROLE"],
+                    conn_id='demo_conn',
                     params=params_info
                     )
 
