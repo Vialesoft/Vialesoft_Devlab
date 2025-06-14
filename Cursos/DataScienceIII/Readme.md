@@ -6,7 +6,7 @@ https://www.coderhouse.com/uy/cursos/data-science-nlp-deep-learning-aplicado-a-c
 ## Resumen
 Este repositorio incluye todo el material utilizado durante el curso, desarrollado en los meses de febrero/marzo de 2025. Hasta este momento, se trataba del último curso de la rama de Data Science que ofrecía la plataforma.
 
-La carpeta "Desafíos" tiene algunos ejercicios domiciliarios cortos, presentados en las clases. "Notebooks prueba" es la carpeta donde puse algunos apuntes y código visto durante las clases. "Proyecto_Final" es el proyecto presentado para exonerar el curso y obtener el certificado.
+La carpeta [Desafíos](https://github.com/Vialesoft/Vialesoft_Devlab/tree/main/Cursos/DataScienceIII/Desafios) tiene algunos ejercicios domiciliarios cortos, presentados en las clases. "Notebooks prueba" es la carpeta donde puse algunos apuntes y código visto durante las clases. "Proyecto_Final" es el proyecto presentado para exonerar el curso y obtener el certificado.
 
 ---
 
