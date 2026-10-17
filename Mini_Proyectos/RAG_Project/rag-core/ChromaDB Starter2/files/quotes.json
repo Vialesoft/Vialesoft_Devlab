@@ -1,0 +1,424 @@
+{
+  "quotes": [
+    {
+      "quote": "La pluma es la lengua del alma.",
+      "author": "Miguel de Cervantes"
+    },
+    {
+      "quote": "El que quiere interesar a los demás tiene que provocarlos.",
+      "author": "Salvador Dalí"
+    },
+    {
+      "quote": "Todos los niños nacen artistas. El problema es cómo seguir siendo artistas al crecer.",
+      "author": "Pablo Picasso"
+    },
+    {
+      "quote": "Una es más auténtica, mientras más se parece a lo que soñó de sí misma.",
+      "author": "Pedro Almovodar"
+    },
+    {
+      "quote": "Soy el desesperado, la palabra sin ecos, el que lo perdió todo, y el que todo lo tuvo.",
+      "author": "Pablo Neruda"
+    },
+    {
+      "quote": "Aprender a sonreír es aprender a ser libres.",
+      "author": "Octavio Paz"
+    },
+    {
+      "quote": "Memoria selectiva para recordar lo bueno, prudencia lógica para no arruinar el presente, y optimismo desafiante para encarar el futuro.",
+      "author": "Isabel Allende"
+    },
+    {
+      "quote": "¿Se pueden inventar verbos? quiero decirte uno: Yo te cielo, así mis alas se extienden enormes para amarte sin medida.",
+      "author": "Frida Kalho"
+    },
+    {
+      "quote": "Se necesitan dos años para aprender a hablar y sesenta para aprender a callar.",
+      "author": "Ernest Hemingway"
+    },
+    {
+      "quote": "No hay que ir para atrás ni para darse impulso.",
+      "author": "Lao Tsé"
+    },
+    {
+      "quote": "No hay caminos para la paz; la paz es el camino.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Haz el amor y no la guerra.",
+      "author": "John Lennon"
+    },
+    {
+      "quote": "Para trabajar basta estar convencido de una cosa: que trabajar es menos aburrido que divertirse.",
+      "author": "Charles Baudelaire"
+    },
+    {
+      "quote": "Lo peor que hacen los malos es obligarnos a dudar de los buenos.",
+      "author": "Jacinto Benavente"
+    },
+    {
+      "quote": "Las guerras seguirán mientras el color de la piel siga siendo más importante que el de los ojos.",
+      "author": "Bob Marley"
+    },
+    {
+      "quote": "Aprende a vivir y sabrás morir bien.",
+      "author": "Confucio"
+    },
+    {
+      "quote": "Cada día sabemos más y entendemos menos.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "El mundo no está en peligro por las malas personas sino por aquellas que permiten la maldad.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "La medida del amor es amar sin medida.",
+      "author": "San Agustín"
+    },
+    {
+      "quote": "No hay nada que un hombre no sea capaz de hacer cuando una mujer le mira.",
+      "author": "Casanova"
+    },
+    {
+      "quote": "Dar el ejemplo no es la principal manera de influir sobre los demás; es la única manera.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "El dinero no puede comprar la vida.",
+      "author": "Bob Marley"
+    },
+    {
+      "quote": "Si es bueno vivir, todavía es mejor soñar, y lo mejor de todo, despertar.",
+      "author": "Antonio Machado"
+    },
+    {
+      "quote": "La mayor declaración de amor es la que no se hace; el hombre que siente mucho, habla poco.",
+      "author": "Platón"
+    },
+    {
+      "quote": "Si das pescado a un hombre hambriento lo nutres durante una jornada. Si le enseñas a pescar, le nutrirás toda su vida.",
+      "author": "Lao Tsé"
+    },
+    {
+      "quote": "Vale más actuar exponiéndose a arrepentirse de ello, que arrepentirse de no haber hecho nada.",
+      "author": "Giovanni Boccaccio"
+    },
+    {
+      "quote": "Ningún hombre es lo bastante bueno para gobernar a otros sin su consentimiento.",
+      "author": "Abraham Lincoln"
+    },
+    {
+      "quote": "Todo lo que se come sin necesidad se roba al estómago de los pobres.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Vivir sola es como estar en una fiesta donde nadie te hace caso.",
+      "author": "Marilyn Monroe"
+    },
+    {
+      "quote": "El cuerpo humano es el carruaje; el yo, el hombre que lo conduce; el pensamiento son las riendas, y los sentimientos, los caballos.",
+      "author": "Platón"
+    },
+    {
+      "quote": "Estar preparado es importante, saber esperarlo es aún más, pero aprovechar el momento adecuado es la clave de la vida.",
+      "author": "Arthur Schnitzler"
+    },
+    {
+      "quote": "No estoy tan enamorado de mis propias opiniones que ignore lo que los demás puedan pensar acerca de ellas.",
+      "author": "Copérnico"
+    },
+    {
+      "quote": "La más estricta justicia no creo que sea siempre la mejor política.",
+      "author": "Abraham Lincoln"
+    },
+    {
+      "quote": "El sabio no dice nunca todo lo que piensa, pero siempre piensa todo lo que dice.",
+      "author": "Aristóteles"
+    },
+    {
+      "quote": "Hay dos cosas que son infinitas: el universo y la estupidez humana; de la primera no estoy muy seguro.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "El nacimiento y la muerte no son dos estados distintos, sino dos aspectos del mismo estado.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Lo que importa verdaderamente en la vida no son los objetivos que nos marcamos, sino los caminos que seguimos para lograrlo.",
+      "author": "Peter Bamm"
+    },
+    {
+      "quote": "El mundo es bello, pero tiene un defecto llamado hombre.",
+      "author": "Friedrich Nietzsche"
+    },
+    {
+      "quote": "La pereza viaja tan despacio que la pobreza no tarda en alcanzarla.",
+      "author": "Benjamin Franklin"
+    },
+    {
+      "quote": "Una velada en que todos los presentes estén absolutamente de acuerdo es una velada perdida.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "Pienso, luego existo.",
+      "author": "René Descartes"
+    },
+    {
+      "quote": "Lo que no te mata, te hace más fuerte.",
+      "author": "Friedrich Nietzsche"
+    },
+    {
+      "quote": "No abras los labios si no estás seguro de que lo que vas a decir es más hermoso que el silencio.",
+      "author": "Proverbio árabe"
+    },
+    {
+      "quote": "De todos los animales de la creación el hombre es el único que bebe sin tener sed, come sin tener hambre y habla sin tener nada que decir.",
+      "author": "John Steinbeck"
+    },
+    {
+      "quote": "La esperanza es un estimulante vital muy superior a la suerte.",
+      "author": "Friedrich Nietzsche"
+    },
+    {
+      "quote": "Un hermano puede no ser un amigo, pero un amigo será siempre un hermano.",
+      "author": "Benjamin Franklin"
+    },
+    {
+      "quote": "Sólo puede ser feliz siempre el que sepa ser feliz con todo.",
+      "author": "Confucio"
+    },
+    {
+      "quote": "Ninguna persona merece tus lágrimas, y quien se las merezca no te hará llorar.",
+      "author": "Gabriel García Márquez"
+    },
+    {
+      "quote": "De humanos es errar y de necios permanecer en el error.",
+      "author": "Marco Tulio Cicerón"
+    },
+    {
+      "quote": "Algunas personas son tan falsas que ya no distinguen que lo que piensan es justamente lo contrario de lo que dicen.",
+      "author": "Marcel Aymé"
+    },
+    {
+      "quote": "La verdadera sabiduría está en reconocer la propia ignorancia.",
+      "author": "Sócrates"
+    },
+    {
+      "quote": "La peor experiencia es la mejor maestra.",
+      "author": "Kovo"
+    },
+    {
+      "quote": "La Educación es el pasaporte hacia el futuro, el mañana pertenece a aquellos que se preparan para él en el día de hoy.",
+      "author": "Malcolm X"
+    },
+    {
+      "quote": "Los amigos se convierten con frecuencia en ladrones de nuestro tiempo.",
+      "author": "Platón"
+    },
+    {
+      "quote": "No permitas que ningún ser humano te haga caer tan bajo como para odiarle.",
+      "author": "Martin Luther King"
+    },
+    {
+      "quote": "El pesimista se queja del viento; el optimista espera que cambie; el realista ajusta las velas.",
+      "author": "William George Ward"
+    },
+    {
+      "quote": "Un amigo de todos es una amigo de nadie.",
+      "author": "Aristóteles"
+    },
+    {
+      "quote": "Hace falta toda una vida para aprender a vivir.",
+      "author": "Séneca"
+    },
+    {
+      "quote": "Son dolor no hay resultado.",
+      "author": "Benjamin Franklin"
+    },
+    {
+      "quote": "Estos son mis principios y si no te gustan, tengo otros.",
+      "author": "Groucho Marx"
+    },
+    {
+      "quote": "La política es el arte de buscar problemas, encontrarlos, realizar un diagnóstico falso y aplicar después remedios equivocados.",
+      "author": "Groucho Marx"
+    },
+    {
+      "quote": "Los verdaderos líderes deben estar dispuestos a sacrificarlo todo por la libertad de su pueblo.",
+      "author": "Nelson Mandela"
+    },
+    {
+      "quote": "Es mejor permanecer callado y parecer tonto que hablar y despejar las dudas definitivamente.",
+      "author": "Groucho Marx"
+    },
+    {
+      "quote": "Aquel que más posee, más miedo tiene de perderlo.",
+      "author": "Leonardo Da Vinci"
+    },
+    {
+      "quote": "La inspiración existe, pero tiene que encontrarte trabajando.",
+      "author": "Pablo Picasso"
+    },
+    {
+      "quote": "Incluso la gente que afirma que no podemos hacer nada para cambiar nuestro destino, mira antes de cruzar la calle.",
+      "author": "Stephen Hawking"
+    },
+    {
+      "quote": "Ojo por ojo y el mundo acabará ciego.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Vive como si fueras a morir mañana; aprende como si el mundo fuera a durar para siempre.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Solo sé que no sé nada.",
+      "author": "Sócrates"
+    },
+    {
+      "quote": "Nunca rompas el silencio si no es para mejorarlo.",
+      "author": "Ludwig van Beethoven"
+    },
+    {
+      "quote": "Puedes engañar a todo el mundo algún tiempo. Puedes engañar a algunos todo el tiempo. Pero no puedes engañar a todo el mundo todo el tiempo.",
+      "author": "Abraham Lincoln"
+    },
+    {
+      "quote": "La mejor manera de librarse de la tentación es caer en ella.",
+      "author": "Oscar Wilde"
+    },
+    {
+      "quote": "La duda es la madre de la invención.",
+      "author": "Galileo Galilei"
+    },
+    {
+      "quote": "Podrán cortar todas las flores, pero no podrán detener la primavera.",
+      "author": "Pablo Neruda"
+    },
+    {
+      "quote": "Es tan corto el amor y tan largo el olvido.",
+      "author": "Pablo Neruda"
+    },
+    {
+      "quote": "Uno llega a ser grande por lo que lee y no por lo que escribe.",
+      "author": "Jorge Luis Borges"
+    },
+    {
+      "quote": "Uno es dueño de lo que calla y esclavo de lo que habla.",
+      "author": "Sigmund Freud"
+    },
+    {
+      "quote": "El único hombre que no se equivoca es el que nunca hace nada.",
+      "author": "Goethe"
+    },
+    {
+      "quote": "Vale más hacer y arrepentirse, que no hacer y arrepentirse.",
+      "author": "Maquiavelo"
+    },
+    {
+      "quote": "Si quieres cambiar al mundo, cámbiate a ti mismo.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Un amigo fiel es un alma en dos cuerpos.",
+      "author": "Aristóteles"
+    },
+    {
+      "quote": "La vida no es sino una continua sucesión de oportunidades para sobrevivir.",
+      "author": "Gabriel García Márquez"
+    },
+    {
+      "quote": "Se necesita poco para hacer las cosas bien, pero menos aún para hacerlas mal.",
+      "author": "Paul Bocuse"
+    },
+    {
+      "quote": "Con veinte años todos tienen el rostro que Dios les ha dado; con cuarenta el rostro que les ha dado la vida y con sesenta el que se merecen.",
+      "author": "Albert Schweitzer"
+    },
+    {
+      "quote": "El amor no tiene cura, pero es la única medicina para todos los males.",
+      "author": "Konrad Adenauer"
+    },
+    {
+      "quote": "No hay camino para la verdad, la verdad es el camino.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "El éxito tiene muchos padres, pero el fracaso es huérfano.",
+      "author": "John Fitzgerald Kennedy"
+    },
+    {
+      "quote": "Quien no haya sufrido lo que yo, que no me de consejos.",
+      "author": "Sófocles"
+    },
+    {
+      "quote": "La vida es un diez por ciento como la hacemos y un noventa por ciento como la tomamos.",
+      "author": "Irving Berlín"
+    },
+    {
+      "quote": "El hombre que más ha vivido no es aquél que más años ha cumplido, sino aquel que más ha experimentado la vida.",
+      "author": "Jean Jacques Rousseau"
+    },
+    {
+      "quote": "En los momentos de crisis, solo la imaginación es más importante que el conocimiento.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "Nuestros hijos no tendrán tiempo para discutir sobre el cambio climático. Solo podrán convivir con sus efectos.",
+      "author": "Barack Obama"
+    },
+    {
+      "quote": "Si quieres cambiar el mundo, toma tu pluma y escribe.",
+      "author": "Martín Lutero"
+    },
+    {
+      "quote": "Hay verdades que no son para todos los hombres, ni para todos los tiempos.",
+      "author": "Voltaire"
+    },
+    {
+      "quote": "Sé el cambio que quieres ver en el mundo.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "La raíz del sufrimiento es el apego.",
+      "author": "Buda"
+    },
+    {
+      "quote": "La religión es el opio del pueblo.",
+      "author": "Karl Marx"
+    },
+    {
+      "quote": "Hay dos clases de hombres: quienes hacen la historia y quienes la padecen.",
+      "author": "Camilo José Cela"
+    },
+    {
+      "quote": "La verdad es siempre revolucionaria.",
+      "author": "Vladimir Lenin"
+    },
+    {
+      "quote": "La peor lucha es la que no se hace.",
+      "author": "Karl Marx"
+    },
+    {
+      "quote": "Vence la ira con serenidad. Vence la maldad con bondad. Vence el egoísmo con generosidad. Vence la deshonestidad con verdad.",
+      "author": "Buda"
+    },
+    {
+      "quote": "Hay dos maneras de vivir su vida: una como si nada es un milagro, la otra es como si todo es un milagro.",
+      "author": "Albert Einstein"
+    },
+    {
+      "quote": "La historia se repite, ese es uno de los errores de la historia.",
+      "author": "Charles Darwin"
+    },
+    {
+      "quote": "La felicidad se alcanza cuando lo que uno piensa, lo que uno dice y lo que uno hace están en armonía.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "quote": "Los pecados escriben la historia, el bien es silencioso.",
+      "author": "Goethe"
+    }
+  ]
+}
