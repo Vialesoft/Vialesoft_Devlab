@@ -19,3 +19,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/database/migrations/initial_db.sql
+    - assets/database/migrations/datos_iniciales.sql

@@ -1,7 +1,3 @@
-PRAGMA foreign_keys = ON;
-
-BEGIN TRANSACTION;
-
 CREATE TABLE MARCA (
     id           INTEGER PRIMARY KEY,
     nombre       TEXT NOT NULL
@@ -106,6 +102,3 @@ CREATE INDEX idx_producto_medida_medida
 CREATE INDEX idx_producto_tag_tag
     ON PRODUCTO_TAG(id_tag);
 
-PRAGMA user_version = 1;
-
-COMMIT;

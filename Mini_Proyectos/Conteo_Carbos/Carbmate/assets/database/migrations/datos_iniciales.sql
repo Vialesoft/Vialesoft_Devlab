@@ -1,6 +1,4 @@
 
-BEGIN TRANSACTION;
-
 -- MARCAS
 INSERT INTO MARCA (id, nombre, creado_en)
 VALUES
@@ -548,4 +546,3 @@ INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES
 -- Dulce de membrillo
 INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES (25, 18);
 
-COMMIT;
