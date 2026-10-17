@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:carbmate/features/home/home_screen.dart';
+
 class CarbmateApp extends StatelessWidget {
   const CarbmateApp({super.key});
 
@@ -10,7 +12,7 @@ class CarbmateApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
       ),
-      home: const Scaffold(body: Center(child: Text('App Conteo Carbos'))),
+      home: const HomeScreen(),
     );
   }
 }
