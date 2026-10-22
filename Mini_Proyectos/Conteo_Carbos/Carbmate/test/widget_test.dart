@@ -10,7 +10,7 @@ void main() {
     await tester.pumpWidget(CarbmateApp(repository: repository));
     await tester.pumpAndSettle();
 
-    expect(find.text('Alimentos'), findsOneWidget);
+    expect(find.text('Catálogo de alimentos'), findsOneWidget);
     await tester.tap(find.byTooltip('Crear alimento'));
     await tester.pumpAndSettle();
 
@@ -35,11 +35,11 @@ void main() {
       findsOneWidget,
     );
     await tester.scrollUntilVisible(
-      find.text('Guardar alimento'),
+      find.text('Guardar'),
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(find.text('Guardar alimento'));
+    await tester.tap(find.text('Guardar'));
     await tester.pumpAndSettle();
     await tester.drag(find.byType(ListView), const Offset(0, 600));
     await tester.pumpAndSettle();
@@ -71,11 +71,11 @@ void main() {
       '54',
     );
     await tester.scrollUntilVisible(
-      find.text('Guardar alimento'),
+      find.text('Guardar'),
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(find.text('Guardar alimento'));
+    await tester.tap(find.text('Guardar'));
     await tester.pumpAndSettle();
 
     expect(find.text('El nombre es obligatorio.'), findsNothing);
@@ -98,12 +98,7 @@ class _FakeFoodRepository implements FoodRepository {
 
   @override
   Future<List<FoodListItem>> loadFoods() async => const [
-    FoodListItem(
-      id: 1,
-      name: 'Pan lactal',
-      brandName: 'Lays',
-      tags: ['Pan'],
-    ),
+    FoodListItem(id: 1, name: 'Pan lactal', brandName: 'Lays', tags: ['Pan']),
   ];
 
   @override
@@ -120,7 +115,18 @@ class _FakeFoodRepository implements FoodRepository {
   }
 
   @override
+  Future<FoodDetails?> loadFood(int id) async => null;
+
+  @override
   Future<void> createFood(NewFood food) async {
     savedFood = food;
   }
+
+  @override
+  Future<void> updateFood(int id, NewFood food) async {
+    savedFood = food;
+  }
+
+  @override
+  Future<void> deleteFood(int id) async {}
 }

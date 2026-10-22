@@ -23,12 +23,24 @@ class FoodListItem {
     required this.name,
     required this.brandName,
     required this.tags,
+    this.carbohydrateSummaries = const [],
   });
 
   final int id;
   final String name;
   final String? brandName;
   final List<String> tags;
+  final List<FoodCarbohydrateSummary> carbohydrateSummaries;
+}
+
+class FoodCarbohydrateSummary {
+  const FoodCarbohydrateSummary({
+    required this.carbohydrateGrams,
+    required this.measureName,
+  });
+
+  final double carbohydrateGrams;
+  final String measureName;
 }
 
 class FoodMeasureDraft {
@@ -59,10 +71,23 @@ class NewFood {
   final List<FoodMeasureDraft> measures;
 }
 
+class FoodDetails {
+  const FoodDetails({required this.id, required this.food});
+
+  final int id;
+  final NewFood food;
+}
+
 abstract interface class FoodRepository {
   Future<List<FoodListItem>> loadFoods();
 
   Future<FoodFormOptions> loadFormOptions();
 
+  Future<FoodDetails?> loadFood(int id);
+
   Future<void> createFood(NewFood food);
+
+  Future<void> updateFood(int id, NewFood food);
+
+  Future<void> deleteFood(int id);
 }

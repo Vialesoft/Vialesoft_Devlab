@@ -14,7 +14,11 @@ VALUES
   (10, 'Haas', '2026-10-17T11:15:00'),
   (11, 'Ramona', '2026-10-17T11:15:00'),
   (12, 'De Ley', '2026-10-17T11:15:00'),
-  (13, 'Chef', '2026-10-17T11:15:00');
+  (13, 'Chef', '2026-10-17T11:15:00'),
+  (14, 'Casa Gusto', '2026-10-21T00:00:00'),
+  (15, 'Sano Sin Harina', '2026-10-21T00:00:00'),
+  (16, 'ElgoVita', '2026-10-21T00:00:00'),
+  (17, 'Schneck', '2026-10-22T00:00:00');
 
 -- TAGS
 INSERT INTO TAG (id, nombre, creado_en)
@@ -36,7 +40,10 @@ VALUES
   (15, 'Galletita', '2026-10-17T11:15:00'),
   (16, 'Jugo', '2026-10-17T11:15:00'),
   (17, 'Barrita', '2026-10-17T11:15:00'),
-  (18, 'Dulce', '2026-10-17T11:15:00');
+  (18, 'Dulce', '2026-10-17T11:15:00'),
+  (19, 'Legumbre', '2026-10-21T00:00:00'),
+  (20, 'Lácteo', '2026-10-21T00:00:00'),
+  (21, 'Aderezo', '2026-10-22T00:00:00');
 
 -- MEDIDAS
 INSERT INTO MEDIDA (id, nombre, creado_en)
@@ -54,7 +61,7 @@ VALUES
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
 VALUES (1, 'Fécula de mandioca', NULL, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
-VALUES (2, 'Papa', 1, '2026-10-17T11:15:00');
+VALUES (2, 'Papas Clásicas', 1, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
 VALUES (3, 'Papa gruesa', 1, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
@@ -128,11 +135,91 @@ VALUES (37, 'Puerro congelado', NULL, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
 VALUES (38, 'Champiñones en lata', NULL, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
-VALUES (39, 'Porotos blancos en lata', NULL, '2026-10-17T11:15:00');
+VALUES (39, 'Porotos blancos cocidos', NULL, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
 VALUES (40, 'Tomates perita en lata', NULL, '2026-10-17T11:15:00');
 INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
 VALUES (41, 'Salsa de tomate De Ley S/A', 12, '2026-10-17T11:15:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (42, 'Limonada con frutos rojos', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (43, 'Alfajor chocolate sin azúcar', 14, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (44, 'Arroz blanco cocido', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (45, 'Zapallito de tronco', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (46, 'Brócoli congelado', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (47, 'Papas a la cacerola', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (48, 'Pan felipe', 15, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (49, 'Pan de viena', 15, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (50, 'Galletitas de limón S/A', 16, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (51, 'Palta', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (52, 'Almendras', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (53, 'Arroz integral cocido', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (54, 'Arándanos', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (55, 'Avena cocida', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (56, 'Banana', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (57, 'Brócoli crudo', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (58, 'Cebolla cruda', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (59, 'Copos de avena crudos', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (60, 'Frutilla', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (61, 'Frambuesa', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (62, 'Porotos frutilla cocidos', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (63, 'Garbanzos cocidos', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (64, 'Kiwi', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (65, 'Leche de vaca', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (66, 'Lentejas cocidas', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (67, 'Mandarina', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (68, 'Manzana', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (69, 'Miel', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (70, 'Naranja', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (71, 'Nueces', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (72, 'Pasas de uva', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (73, 'Pera', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (74, 'Puré de papa', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (75, 'Quinoa cocida', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (76, 'Repollo blanco crudo', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (77, 'Tomate crudo', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (78, 'Uva', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (79, 'Zanahoria cruda', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (80, 'Zucchini', NULL, '2026-10-21T00:00:00');
+INSERT INTO PRODUCTO (id, nombre, id_marca, creado_en)
+VALUES (81, 'Mostaza', 17, '2026-10-22T00:00:00');
 
 -- EQUIVALENCIAS
 -- La fécula tiene peso conocido, pero carbohidratos desconocidos.
@@ -148,7 +235,7 @@ FROM PRODUCTO p, MEDIDA m
 WHERE p.id = 1
   AND m.id = 7;
 
--- Papa Lays común: 1 g CHO por unidad
+-- Papas Lays Clásicas: 1 g CHO por unidad
 INSERT INTO PRODUCTO_MEDIDA (id_prod, id_med, grs_prod, grs_cho)
 SELECT p.id, m.id, NULL, 1
 FROM PRODUCTO p
@@ -428,9 +515,9 @@ FROM PRODUCTO p, MEDIDA m
 WHERE p.id = 38
   AND m.id = 7;
 
--- Porotos blancos en lata: 13 g CHO / 100 g, confianza alta
-INSERT INTO PRODUCTO_MEDIDA (id_prod, id_med, grs_prod, grs_cho, confianza)
-SELECT p.id, m.id, 100, 13, '3 - Alto'
+-- Porotos blancos cocidos: 25 g CHO / 100 g
+INSERT INTO PRODUCTO_MEDIDA (id_prod, id_med, grs_prod, grs_cho)
+SELECT p.id, m.id, 100, 25
 FROM PRODUCTO p, MEDIDA m
 WHERE p.id = 39
   AND m.id = 7;
@@ -457,7 +544,93 @@ SET confianza = CASE
     THEN '3 - Alto'
   ELSE '2 - Medio'
 END
-WHERE confianza IS NULL;
+WHERE confianza IS NULL
+  AND id_prod <= 41;
+
+-- Nuevas equivalencias agregadas el 2026-10-21.
+-- Las bebidas se guardan contra 100 g usando el valor informado por 100 ml.
+INSERT INTO PRODUCTO_MEDIDA (id_prod, id_med, grs_prod, grs_cho)
+VALUES
+  (42, 7, 100, 5),
+  (43, 4, 60, 22),
+  (44, 7, 100, 30),
+  (45, 7, 100, 4),
+  (46, 7, 100, 4),
+  (47, 7, 100, 22),
+  (48, 4, 50, 22),
+  (49, 4, 25, 11),
+  (50, 4, 15, 10);
+
+-- Nuevos alimentos de la lista de la app: carbohidratos por 100 g.
+INSERT INTO PRODUCTO_MEDIDA (id_prod, id_med, grs_prod, grs_cho)
+VALUES
+  (51, 7, 100, 9),
+  (52, 7, 100, 22),
+  (53, 7, 100, 23),
+  (54, 7, 100, 14),
+  (55, 7, 100, 12),
+  (56, 7, 100, 21),
+  (57, 7, 100, 7),
+  (58, 7, 100, 9),
+  (59, 7, 100, 60),
+  (60, 7, 100, 8),
+  (61, 7, 100, 13),
+  (62, 7, 100, 23),
+  (63, 7, 100, 27),
+  (64, 7, 100, 15),
+  (65, 7, 100, 5),
+  (66, 7, 100, 20),
+  (67, 7, 100, 12),
+  (68, 7, 100, 11),
+  (69, 7, 100, 82),
+  (70, 7, 100, 12),
+  (71, 7, 100, 14),
+  (72, 7, 100, 79),
+  (73, 7, 100, 15),
+  (74, 7, 100, 15),
+  (75, 7, 100, 21),
+  (76, 7, 100, 6),
+  (77, 7, 100, 4),
+  (78, 7, 100, 18),
+  (79, 7, 100, 10),
+  (80, 7, 100, 3);
+
+-- Mostaza Schneck: 1,6 g CHO en una cucharada de 12 g.
+-- La derivación posterior calcula 13,333... g CHO cada 100 g.
+INSERT INTO PRODUCTO_MEDIDA (id_prod, id_med, grs_prod, grs_cho)
+VALUES (81, 1, 12, 1.6);
+
+-- Derivar CHO por 100 g cuando hay una única equivalencia fuente con peso.
+-- Se conserva su confianza y no se reemplazan
+-- valores de 100 g que ya estén declarados explícitamente.
+INSERT INTO PRODUCTO_MEDIDA
+  (id_prod, id_med, grs_prod, grs_cho, confianza)
+SELECT origen.id_prod,
+       medida_100g.id,
+       100,
+       origen.grs_cho * 100.0 / origen.grs_prod,
+       origen.confianza
+FROM PRODUCTO_MEDIDA AS origen
+JOIN MEDIDA AS medida_100g
+  ON medida_100g.nombre = '100 g'
+  AND medida_100g.eliminado_en IS NULL
+WHERE origen.id_med <> medida_100g.id
+  AND origen.grs_prod > 0
+  AND origen.grs_cho IS NOT NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM PRODUCTO_MEDIDA AS existente
+    WHERE existente.id_prod = origen.id_prod
+      AND existente.id_med = medida_100g.id
+  )
+  AND (
+    SELECT COUNT(*)
+    FROM PRODUCTO_MEDIDA AS alternativa
+    WHERE alternativa.id_prod = origen.id_prod
+      AND alternativa.id_med <> medida_100g.id
+      AND alternativa.grs_prod > 0
+      AND alternativa.grs_cho IS NOT NULL
+  ) = 1;
 
 -- Verdura
 INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES
@@ -545,4 +718,61 @@ INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES
 
 -- Dulce de membrillo
 INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES (25, 18);
+
+-- Nuevos alimentos: tags acordados.
+INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES
+  (42, 10),
+  (43, 3),
+  (44, 7),
+  (44, 8),
+  (45, 1),
+  (46, 1),
+  (46, 2),
+  (47, 8),
+  (47, 9),
+  (48, 13),
+  (49, 13),
+  (50, 15);
+
+-- Nuevos alimentos de la lista de la app.
+INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES
+  (51, 5),
+  (52, 6),
+  (53, 7),
+  (53, 8),
+  (54, 5),
+  (55, 7),
+  (56, 5),
+  (57, 1),
+  (58, 1),
+  (59, 7),
+  (60, 5),
+  (61, 5),
+  (39, 19),
+  (62, 19),
+  (63, 19),
+  (64, 5),
+  (65, 20),
+  (66, 19),
+  (67, 5),
+  (68, 5),
+  (69, 18),
+  (70, 5),
+  (71, 6),
+  (72, 5),
+  (73, 5),
+  (74, 8),
+  (74, 9),
+  (75, 7),
+  (76, 1),
+  (77, 1),
+  (78, 5),
+  (79, 1),
+  (80, 1),
+  (22, 20);
+
+-- Aderezo
+INSERT INTO PRODUCTO_TAG (id_prod, id_tag) VALUES
+  (41, 21),
+  (81, 21);
 

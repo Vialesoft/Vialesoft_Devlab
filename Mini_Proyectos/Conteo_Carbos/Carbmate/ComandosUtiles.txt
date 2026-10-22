@@ -1,0 +1,9 @@
+Listar emuladores
+---------------------------------
+cd /d C:\Code\Vialesoft\Vialesoft_Devlab\Mini_Proyectos\Conteo_Carbos\Carbmate
+flutter devices
+
+
+
+flutter emulators --launch Medium_Phone_API_37.0
+flutter run -d emulator-5554
