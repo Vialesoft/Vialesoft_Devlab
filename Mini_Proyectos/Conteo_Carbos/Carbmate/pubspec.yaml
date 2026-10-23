@@ -22,3 +22,6 @@ flutter:
   assets:
     - assets/database/migrations/initial_db.sql
     - assets/database/migrations/datos_iniciales.sql
+    - assets/database/migrations/add_measure_eliminable.sql
+    - assets/images/carbmate_mascot.png
+    - assets/images/carbmate_launcher.png

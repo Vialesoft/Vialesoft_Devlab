@@ -5,6 +5,22 @@ class CatalogOption {
   final String name;
 }
 
+enum CatalogKind { tags, brands, measures }
+
+class MaintenanceCatalogEntry {
+  const MaintenanceCatalogEntry({
+    required this.id,
+    required this.name,
+    required this.deletable,
+    this.note,
+  });
+
+  final int id;
+  final String name;
+  final String? note;
+  final bool deletable;
+}
+
 class FoodFormOptions {
   const FoodFormOptions({
     required this.brands,
@@ -79,6 +95,17 @@ class FoodDetails {
 }
 
 abstract interface class FoodRepository {
+  Future<List<MaintenanceCatalogEntry>> loadCatalogEntries(CatalogKind kind);
+
+  Future<void> saveCatalogEntry({
+    required CatalogKind kind,
+    int? id,
+    required String name,
+    String? note,
+  });
+
+  Future<void> deleteCatalogEntry(CatalogKind kind, int id);
+
   Future<List<FoodListItem>> loadFoods();
 
   Future<FoodFormOptions> loadFormOptions();

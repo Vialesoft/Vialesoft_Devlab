@@ -1,0 +1,7 @@
+ALTER TABLE MEDIDA
+ADD COLUMN eliminable INTEGER NOT NULL DEFAULT 1
+CHECK (eliminable IN (0, 1));
+
+UPDATE MEDIDA
+SET eliminable = 0
+WHERE nombre = '100 g';

@@ -8,6 +8,126 @@ class SqliteFoodRepository implements FoodRepository {
   final SqliteDatabase _database;
 
   @override
+  Future<List<MaintenanceCatalogEntry>> loadCatalogEntries(
+    CatalogKind kind,
+  ) async {
+    final table = _catalogTable(kind);
+    final select = switch (kind) {
+      CatalogKind.tags =>
+        'SELECT c.id, c.nombre, NULL AS nota, '
+            'CASE WHEN EXISTS (SELECT 1 FROM PRODUCTO_TAG x '
+            'JOIN PRODUCTO p ON p.id = x.id_prod '
+            'WHERE x.id_tag = c.id AND p.eliminado_en IS NULL) '
+            'THEN 0 ELSE 1 END AS eliminable '
+            'FROM $table c WHERE c.eliminado_en IS NULL '
+            'ORDER BY c.nombre COLLATE NOCASE',
+      CatalogKind.brands =>
+        'SELECT c.id, c.nombre, NULL AS nota, '
+            'CASE WHEN EXISTS (SELECT 1 FROM PRODUCTO x '
+            'WHERE x.id_marca = c.id AND x.eliminado_en IS NULL) '
+            'THEN 0 ELSE 1 END AS eliminable FROM $table c '
+            'WHERE c.eliminado_en IS NULL ORDER BY c.nombre COLLATE NOCASE',
+      CatalogKind.measures =>
+        'SELECT c.id, c.nombre, c.nota, '
+            'CASE WHEN c.eliminable = 1 AND NOT EXISTS '
+            '(SELECT 1 FROM PRODUCTO_MEDIDA x JOIN PRODUCTO p '
+            'ON p.id = x.id_prod WHERE x.id_med = c.id '
+            'AND p.eliminado_en IS NULL) '
+            'THEN 1 ELSE 0 END AS eliminable FROM $table c '
+            'WHERE c.eliminado_en IS NULL ORDER BY c.nombre COLLATE NOCASE',
+    };
+    final rows = await _database.getAll(
+      select,
+    );
+    return [
+      for (final row in rows)
+        MaintenanceCatalogEntry(
+          id: row['id'] as int,
+          name: row['nombre'] as String,
+          note: row['nota'] as String?,
+          deletable: row['eliminable'] == 1,
+        ),
+    ];
+  }
+
+  @override
+  Future<void> saveCatalogEntry({
+    required CatalogKind kind,
+    int? id,
+    required String name,
+    String? note,
+  }) {
+    final table = _catalogTable(kind);
+    final cleanName = name.trim();
+    final cleanNote = note?.trim();
+    return _database.writeTransaction((transaction) async {
+      if (id == null) {
+        if (kind == CatalogKind.measures) {
+          await transaction.execute(
+            'INSERT INTO $table (nombre, nota, creado_en) VALUES (?, ?, ?)',
+            [
+              cleanName,
+              cleanNote == null || cleanNote.isEmpty ? null : cleanNote,
+              DateTime.now().toIso8601String(),
+            ],
+          );
+        } else {
+          await transaction.execute(
+            'INSERT INTO $table (nombre, creado_en) VALUES (?, ?)',
+            [cleanName, DateTime.now().toIso8601String()],
+          );
+        }
+      } else if (kind == CatalogKind.measures) {
+        await transaction.execute(
+          'UPDATE $table SET nombre = ?, nota = ? WHERE id = ? AND eliminado_en IS NULL',
+          [
+            cleanName,
+            cleanNote == null || cleanNote.isEmpty ? null : cleanNote,
+            id,
+          ],
+        );
+      } else {
+        await transaction.execute(
+          'UPDATE $table SET nombre = ? WHERE id = ? AND eliminado_en IS NULL',
+          [cleanName, id],
+        );
+      }
+    });
+  }
+
+  @override
+  Future<void> deleteCatalogEntry(CatalogKind kind, int id) {
+    final table = _catalogTable(kind);
+    final now = DateTime.now().toIso8601String();
+    return _database.writeTransaction((transaction) async {
+      final deletableCondition = kind == CatalogKind.measures
+          ? 'AND eliminable = 1 AND NOT EXISTS '
+                '(SELECT 1 FROM PRODUCTO_MEDIDA x JOIN PRODUCTO p '
+                'ON p.id = x.id_prod WHERE x.id_med = $table.id '
+                'AND p.eliminado_en IS NULL) '
+          : kind == CatalogKind.tags
+          ? 'AND NOT EXISTS '
+                '(SELECT 1 FROM PRODUCTO_TAG x JOIN PRODUCTO p '
+                'ON p.id = x.id_prod WHERE x.id_tag = $table.id '
+                'AND p.eliminado_en IS NULL) '
+          : 'AND NOT EXISTS '
+                '(SELECT 1 FROM PRODUCTO x '
+                'WHERE x.id_marca = $table.id AND x.eliminado_en IS NULL) ';
+      await transaction.execute(
+        'UPDATE $table SET eliminado_en = ? '
+        'WHERE id = ? $deletableCondition AND eliminado_en IS NULL',
+        [now, id],
+      );
+    });
+  }
+
+  String _catalogTable(CatalogKind kind) => switch (kind) {
+    CatalogKind.tags => 'TAG',
+    CatalogKind.brands => 'MARCA',
+    CatalogKind.measures => 'MEDIDA',
+  };
+
+  @override
   Future<List<FoodListItem>> loadFoods() async {
     final rows = await _database.getAll(
       'SELECT p.id, p.nombre, m.nombre AS marca, '

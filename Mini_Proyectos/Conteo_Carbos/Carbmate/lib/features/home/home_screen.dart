@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:carbmate/core/text/search_text.dart';
+import 'package:carbmate/features/calculator/calculator_screen.dart';
+import 'package:carbmate/features/catalog/catalog_maintenance_screen.dart';
 import 'package:carbmate/features/foods/create_food_screen.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 
@@ -14,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
+  final _calculatorSession = CalculatorSession();
   List<FoodListItem> _foods = const [];
   String _query = '';
   Object? _loadError;
@@ -66,23 +70,110 @@ class _HomeScreenState extends State<HomeScreen> {
     if (changed == true && mounted) await _loadFoods();
   }
 
+  void _openCalculator() {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => CalculatorScreen(
+          repository: widget.repository,
+          session: _calculatorSession,
+        ),
+      ),
+    );
+  }
+
+  void _openAbout() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => const _AboutScreen(),
+      ),
+    );
+  }
+
+  Future<void> _openCatalogMaintenance(
+    CatalogKind kind,
+    String title,
+    IconData icon,
+  ) async {
+    Navigator.of(context).pop();
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => CatalogMaintenanceScreen(
+          repository: widget.repository,
+          kind: kind,
+          title: title,
+          icon: icon,
+        ),
+      ),
+    );
+    if (mounted) await _loadFoods();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final query = _query.trim().toLowerCase();
+    final query = normalizeSearchText(_query.trim());
     final visibleFoods = _foods.where((food) {
       if (query.isEmpty) return true;
       final searchableText = [
         food.name,
         food.brandName ?? '',
         ...food.tags,
-      ].join(' ').toLowerCase();
+      ].map(normalizeSearchText).join(' ');
       return searchableText.contains(query);
     }).toList();
 
     return Scaffold(
+      drawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.sell_outlined),
+                title: const Text('Tags'),
+                onTap: () => _openCatalogMaintenance(
+                  CatalogKind.tags,
+                  'Tags',
+                  Icons.sell_outlined,
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.storefront_outlined),
+                title: const Text('Marcas'),
+                onTap: () => _openCatalogMaintenance(
+                  CatalogKind.brands,
+                  'Marcas',
+                  Icons.storefront_outlined,
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.scale_outlined),
+                title: const Text('Medidas'),
+                onTap: () => _openCatalogMaintenance(
+                  CatalogKind.measures,
+                  'Medidas',
+                  Icons.scale_outlined,
+                ),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Acerca de'),
+                onTap: _openAbout,
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
-        leading: const Icon(Icons.restaurant_menu),
-        title: const Text('Catálogo de alimentos'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.restaurant_menu),
+            const SizedBox(width: 8),
+            const Flexible(child: Text('Catálogo de alimentos')),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -112,10 +203,24 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(child: _buildFoodList(visibleFoods)),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Crear alimento',
-        onPressed: _openCreateFood,
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'open-calculator',
+            tooltip: 'Calculadora',
+            onPressed: _openCalculator,
+            child: const Icon(Icons.calculate_outlined),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'create-food',
+            tooltip: 'Crear alimento',
+            onPressed: _openCreateFood,
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }
@@ -205,6 +310,68 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _AboutScreen extends StatelessWidget {
+  const _AboutScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Acerca de')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.restaurant_menu,
+                  size: 56,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(height: 12),
+                Text('Carbmate', style: theme.textTheme.headlineMedium),
+                const SizedBox(height: 4),
+                Text(
+                  'Vialesoft',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Carbmate ayuda a organizar alimentos y consultar su contenido '
+                  'de carbohidratos de forma práctica. El catálogo reúne marcas, '
+                  'tags y medidas para tener la información a mano.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Su calculadora permite combinar ingredientes y obtener el '
+                  'peso y los carbohidratos totales de una preparación.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  '© ${DateTime.now().year} Vialesoft',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
