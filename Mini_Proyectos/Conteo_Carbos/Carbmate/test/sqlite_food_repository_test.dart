@@ -37,6 +37,14 @@ void main() {
             await transaction.executeMultiple(schema);
             await transaction.executeMultiple(initialData);
           }),
+        )
+        ..add(
+          SqliteMigration(2, (transaction) async {
+            final migration = await rootBundle.loadString(
+              'assets/database/migrations/add_measure_eliminable.sql',
+            );
+            await transaction.executeMultiple(migration);
+          }),
         );
       await migrations.migrate(database);
 
@@ -50,6 +58,18 @@ void main() {
       );
       final preparedTag = options.tags.firstWhere(
         (option) => option.name == 'Preparado',
+      );
+      var measureEntries = await repository.loadCatalogEntries(
+        CatalogKind.measures,
+      );
+      expect(
+        measureEntries.firstWhere((entry) => entry.id == hundredGrams.id)
+            .deletable,
+        isFalse,
+      );
+      expect(
+        measureEntries.firstWhere((entry) => entry.id == cup.id).deletable,
+        isTrue,
       );
 
       await repository.createFood(
@@ -94,6 +114,13 @@ void main() {
       expect(measures[1]['confianza'], isNull);
       expect(tags, hasLength(1));
       expect(await database.getAll('PRAGMA foreign_key_check'), isEmpty);
+
+      await repository.deleteCatalogEntry(CatalogKind.measures, cup.id);
+      measureEntries = await repository.loadCatalogEntries(
+        CatalogKind.measures,
+      );
+      final cupEntry = measureEntries.firstWhere((entry) => entry.id == cup.id);
+      expect(cupEntry.deletable, isFalse);
     } finally {
       await database.close();
       await directory.delete(recursive: true);

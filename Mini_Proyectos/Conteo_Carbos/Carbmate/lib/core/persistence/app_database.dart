@@ -21,6 +21,14 @@ class AppDatabase {
         await transaction.executeMultiple(schema);
         await transaction.executeMultiple(initialData);
       }),
+    )
+    ..add(
+      SqliteMigration(2, (transaction) async {
+        final migration = await rootBundle.loadString(
+          'assets/database/migrations/add_measure_eliminable.sql',
+        );
+        await transaction.executeMultiple(migration);
+      }),
     );
 
   final SqliteDatabase connection;

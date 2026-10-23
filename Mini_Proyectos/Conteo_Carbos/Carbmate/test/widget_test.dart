@@ -30,9 +30,10 @@ void main() {
       find.text('No hay tags asociados. Podés continuar sin ellos.'),
       findsOneWidget,
     );
+    expect(find.text('Carbohidratos por 100 g'), findsOneWidget);
     expect(
       find.text('No hay medidas asociadas. Podés continuar sin ellas.'),
-      findsOneWidget,
+      findsNothing,
     );
     await tester.scrollUntilVisible(
       find.text('Guardar'),
@@ -55,6 +56,11 @@ void main() {
     await tester.enterText(
       find.byKey(const Key('carbohydrates-per-100g')),
       '45,5',
+    );
+    await tester.scrollUntilVisible(
+      find.text('Agregar otra medida'),
+      300,
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(find.text('Agregar otra medida'));
     await tester.pumpAndSettle();
@@ -95,6 +101,22 @@ void main() {
 
 class _FakeFoodRepository implements FoodRepository {
   NewFood? savedFood;
+
+  @override
+  Future<List<MaintenanceCatalogEntry>> loadCatalogEntries(
+    CatalogKind kind,
+  ) async => const [];
+
+  @override
+  Future<void> saveCatalogEntry({
+    required CatalogKind kind,
+    int? id,
+    required String name,
+    String? note,
+  }) async {}
+
+  @override
+  Future<void> deleteCatalogEntry(CatalogKind kind, int id) async {}
 
   @override
   Future<List<FoodListItem>> loadFoods() async => const [

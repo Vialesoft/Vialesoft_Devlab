@@ -34,7 +34,7 @@ class _CarbmateAppState extends State<CarbmateApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App Conteo Carbos',
+      title: 'Carbmate',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
       ),
@@ -66,13 +66,53 @@ class _CarbmateAppState extends State<CarbmateApp> {
 
           final repository = snapshot.data;
           if (repository == null) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
+            return const _StartupScreen();
           }
 
           return HomeScreen(repository: repository);
         },
+      ),
+    );
+  }
+}
+
+class _StartupScreen extends StatelessWidget {
+  const _StartupScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: const Color(0xFFE7F8F2),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/carbmate_mascot.png',
+              width: 220,
+              height: 280,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Carbmate',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 28),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

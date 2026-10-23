@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:carbmate/core/text/search_text.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 
 class CreateFoodScreen extends StatefulWidget {
@@ -112,6 +113,15 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     return null;
   }
 
+  String? _validateProductGrams(String? value) {
+    final error = _validateOptionalNumber(value);
+    if (error != null) return error;
+    if (value != null && value.trim().isNotEmpty && _parseNumber(value) == 0) {
+      return 'El peso debe ser mayor a 0.';
+    }
+    return null;
+  }
+
   double? _calculateCarbohydratesPer100g(_AdditionalMeasureInput measure) {
     final productGrams = _parseNumber(measure.productGrams.text);
     final carbohydrateGrams = _parseNumber(measure.carbohydrates.text);
@@ -123,10 +133,9 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
 
   void _onAdditionalMeasureChanged(_AdditionalMeasureInput measure) {
     final calculated = _calculateCarbohydratesPer100g(measure);
-    if (calculated == null) return;
-
-    if (_carbohydratesPer100gController.text.trim().isEmpty ||
-        _carbohydratesPer100gWasCalculated) {
+    if (calculated != null &&
+        (_carbohydratesPer100gController.text.trim().isEmpty ||
+            _carbohydratesPer100gWasCalculated)) {
       setState(() {
         _show100gMeasure = true;
         _carbohydratesPer100gController.text = _formatNumber(calculated);
@@ -135,6 +144,34 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     } else {
       setState(() {});
     }
+  }
+
+  InputDecoration _measureInputDecoration({
+    required String labelText,
+    required bool incomplete,
+    String? suffixText,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final borderColor = incomplete
+        ? colorScheme.error
+        : colorScheme.outline;
+    return InputDecoration(
+      labelText: labelText,
+      suffixText: suffixText,
+      border: const OutlineInputBorder(),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: borderColor,
+          width: incomplete ? 1.5 : 1,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: incomplete ? colorScheme.error : colorScheme.primary,
+          width: 2,
+        ),
+      ),
+    );
   }
 
   String _formatNumber(double value) {
@@ -183,25 +220,25 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     final choice = await showDialog<_MismatchSaveChoice>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Revisar CHO cada 100 g'),
+        title: const Text('Revisar CHO/100 g'),
         content: Text(
-          'El valor cargado (${_formatNumber(_parseNumber(_carbohydratesPer100gController.text)!)} g/100 g) '
-          'difiere en más de 1 g/100 g de estas equivalencias:\n\n'
+          'Ingresaste ${_formatNumber(_parseNumber(_carbohydratesPer100gController.text)!)} g CHO/100 g, '
+          'pero al calcular desde estas medidas se obtienen:\n\n'
           '$mismatchDetails\n\n'
-          'Podés editar CHO/100 g o guardar con el valor actual.',
+          'La diferencia supera 1 g CHO/100 g. Podés revisar el valor o guardarlo igualmente.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(
               _MismatchSaveChoice.edit,
             ),
-            child: const Text('Editar CHO/100 g'),
+            child: const Text('Revisar valor'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(
               _MismatchSaveChoice.saveAsIs,
             ),
-            child: const Text('Guardar como está'),
+            child: const Text('Guardar igualmente'),
           ),
         ],
       ),
@@ -209,7 +246,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
 
     if (choice == _MismatchSaveChoice.edit && mounted) {
       final fieldContext = _carbohydratesPer100gFieldKey.currentContext;
-      if (fieldContext != null) {
+      if (fieldContext != null && fieldContext.mounted) {
         await Scrollable.ensureVisible(
           fieldContext,
           duration: const Duration(milliseconds: 250),
@@ -221,6 +258,88 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
       }
     }
     return choice == _MismatchSaveChoice.saveAsIs;
+  }
+
+  Future<List<_MeasureMissingWeight>> _findMeasuresMissingWeight() async {
+    final options = await _optionsFuture;
+    final missing = <_MeasureMissingWeight>[];
+    for (final measure in _additionalMeasures) {
+      final carbohydrates = _parseNumber(measure.carbohydrates.text);
+      if (measure.measureId == null ||
+          carbohydrates == null ||
+          _parseNumber(measure.productGrams.text) != null) {
+        continue;
+      }
+      var measureName = 'Medida';
+      for (final option in options.measures) {
+        if (option.id == measure.measureId) {
+          measureName = option.name;
+          break;
+        }
+      }
+      missing.add(
+        _MeasureMissingWeight(
+          measure: measure,
+          name: measureName,
+          carbohydrates: carbohydrates,
+        ),
+      );
+    }
+    return missing;
+  }
+
+  Future<bool> _confirmSavingWithoutWeights(
+    List<_MeasureMissingWeight> missing,
+  ) async {
+    final details = missing
+        .map(
+          (item) =>
+              '• ${item.name}: ${_formatNumber(item.carbohydrates)} g CHO',
+        )
+        .join('\n');
+    final choice = await showDialog<_MissingWeightSaveChoice>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Falta el peso de algunas medidas'),
+        content: SingleChildScrollView(
+          child: Text(
+            'Cargaste los carbohidratos, pero no el peso de estas medidas:\n\n'
+            '$details\n\n'
+            'Podrás usarlas por medida, pero no convertirlas a gramos ni '
+            'incluirlas en el peso total. ¿Querés guardarlas así?',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => _focusProductGrams(missing.first.measure),
+            child: const Text('Completar peso'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(
+              _MissingWeightSaveChoice.saveWithoutWeight,
+            ),
+            child: const Text('Guardar sin peso'),
+          ),
+        ],
+      ),
+    );
+    return choice == _MissingWeightSaveChoice.saveWithoutWeight;
+  }
+
+  Future<void> _focusProductGrams(_AdditionalMeasureInput measure) async {
+    if (!context.mounted) return;
+    Navigator.of(context).pop(_MissingWeightSaveChoice.completeWeight);
+    await WidgetsBinding.instance.endOfFrame;
+    final fieldContext = measure.fieldKey.currentContext;
+    if (fieldContext == null || !fieldContext.mounted || !mounted) return;
+    await Scrollable.ensureVisible(
+      fieldContext,
+      duration: const Duration(milliseconds: 250),
+      alignment: 0.35,
+    );
+    if (mounted) {
+      FocusScope.of(context).requestFocus(measure.productGramsFocusNode);
+    }
   }
 
   List<FoodMeasureDraft> _collectMeasures() {
@@ -274,6 +393,12 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     if (!mounted) return;
     if (mismatches.isNotEmpty &&
         !await _confirmSavingWithMismatches(mismatches)) {
+      return;
+    }
+    final missingWeights = await _findMeasuresMissingWeight();
+    if (!mounted) return;
+    if (missingWeights.isNotEmpty &&
+        !await _confirmSavingWithoutWeights(missingWeights)) {
       return;
     }
 
@@ -407,6 +532,8 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     final measure100g = options.measures.firstWhere(
       (measure) => measure.id == _measure100gId,
     );
+    final hasCarbohydratesPer100g =
+        _parseNumber(_carbohydratesPer100gController.text) != null;
     final hasMeasures = _collectMeasures().isNotEmpty;
 
     return Scaffold(
@@ -553,10 +680,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.4),
+                    color: (hasCarbohydratesPer100g
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.error)
+                        .withValues(alpha: 0.55),
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -570,11 +697,11 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                             key: const Key('carbohydrates-per-100g'),
                             focusNode: _carbohydratesPer100gFocusNode,
                             controller: _carbohydratesPer100gController,
-                            decoration: InputDecoration(
+                            decoration: _measureInputDecoration(
                               labelText:
                                   'Carbohidratos por ${measure100g.name}',
                               suffixText: 'g CHO',
-                              border: const OutlineInputBorder(),
+                              incomplete: !hasCarbohydratesPer100g,
                             ),
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
@@ -654,6 +781,12 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
 
   Widget _buildAdditionalMeasureRow(FoodFormOptions options, int index) {
     final row = _additionalMeasures[index];
+    final isMissingProductGrams =
+        _parseNumber(row.productGrams.text) == null;
+    final isMissingCarbohydrates =
+        _parseNumber(row.carbohydrates.text) == null;
+    final isIncomplete =
+        isMissingProductGrams || isMissingCarbohydrates;
     final usedByOtherRows = _additionalMeasures
         .where((measure) => !identical(measure, row))
         .map((measure) => measure.measureId)
@@ -667,15 +800,16 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
         .toList();
 
     return Padding(
+      key: row.fieldKey,
       padding: const EdgeInsets.only(top: 12),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: Theme.of(context)
-                .colorScheme
-                .primary
-                .withValues(alpha: 0.4),
+            color: (isIncomplete
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.primary)
+                .withValues(alpha: 0.55),
           ),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -731,9 +865,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                   child: TextFormField(
                     key: ValueKey('product-grams-$index'),
                     controller: row.productGrams,
-                    decoration: const InputDecoration(
+                    focusNode: row.productGramsFocusNode,
+                    decoration: _measureInputDecoration(
                       labelText: 'Gramos de producto',
-                      border: OutlineInputBorder(),
+                      incomplete: isMissingProductGrams,
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -741,7 +876,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
                     ],
-                    validator: _validateOptionalNumber,
+                    validator: _validateProductGrams,
                     onChanged: (_) => _onAdditionalMeasureChanged(row),
                   ),
                 ),
@@ -750,9 +885,9 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                   child: TextFormField(
                     key: ValueKey('additional-carbohydrates-$index'),
                     controller: row.carbohydrates,
-                    decoration: const InputDecoration(
+                    decoration: _measureInputDecoration(
                       labelText: 'Carbohidratos (g)',
-                      border: OutlineInputBorder(),
+                      incomplete: isMissingCarbohydrates,
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -783,6 +918,8 @@ class _AdditionalMeasureInput {
   }) : productGrams = TextEditingController(text: productGrams),
        carbohydrates = TextEditingController(text: carbohydrates);
 
+  final fieldKey = GlobalKey();
+  final productGramsFocusNode = FocusNode();
   int? measureId;
   String? confidence;
   final bool isExisting;
@@ -792,7 +929,22 @@ class _AdditionalMeasureInput {
   void dispose() {
     productGrams.dispose();
     carbohydrates.dispose();
+    productGramsFocusNode.dispose();
   }
+}
+
+enum _MissingWeightSaveChoice { completeWeight, saveWithoutWeight }
+
+class _MeasureMissingWeight {
+  const _MeasureMissingWeight({
+    required this.measure,
+    required this.name,
+    required this.carbohydrates,
+  });
+
+  final _AdditionalMeasureInput measure;
+  final String name;
+  final double carbohydrates;
 }
 
 enum _MismatchSaveChoice { edit, saveAsIs }
@@ -862,9 +1014,9 @@ class _CatalogPickerSheetState extends State<_CatalogPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final query = _query.trim().toLowerCase();
+    final query = normalizeSearchText(_query.trim());
     final filtered = widget.options
-        .where((option) => option.name.toLowerCase().contains(query))
+        .where((option) => normalizeSearchText(option.name).contains(query))
         .toList();
     return SafeArea(
       child: Padding(
