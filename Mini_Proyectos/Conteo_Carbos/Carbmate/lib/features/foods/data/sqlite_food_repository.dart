@@ -14,7 +14,7 @@ class SqliteFoodRepository implements FoodRepository {
     final table = _catalogTable(kind);
     final select = switch (kind) {
       CatalogKind.tags =>
-        'SELECT c.id, c.nombre, NULL AS nota, '
+        'SELECT c.id, c.nombre, c.nota, '
             'CASE WHEN EXISTS (SELECT 1 FROM PRODUCTO_TAG x '
             'JOIN PRODUCTO p ON p.id = x.id_prod '
             'WHERE x.id_tag = c.id AND p.eliminado_en IS NULL) '
@@ -22,7 +22,7 @@ class SqliteFoodRepository implements FoodRepository {
             'FROM $table c WHERE c.eliminado_en IS NULL '
             'ORDER BY c.nombre COLLATE NOCASE',
       CatalogKind.brands =>
-        'SELECT c.id, c.nombre, NULL AS nota, '
+        'SELECT c.id, c.nombre, c.nota, '
             'CASE WHEN EXISTS (SELECT 1 FROM PRODUCTO x '
             'WHERE x.id_marca = c.id AND x.eliminado_en IS NULL) '
             'THEN 0 ELSE 1 END AS eliminable FROM $table c '
@@ -62,22 +62,15 @@ class SqliteFoodRepository implements FoodRepository {
     final cleanNote = note?.trim();
     return _database.writeTransaction((transaction) async {
       if (id == null) {
-        if (kind == CatalogKind.measures) {
-          await transaction.execute(
-            'INSERT INTO $table (nombre, nota, creado_en) VALUES (?, ?, ?)',
-            [
-              cleanName,
-              cleanNote == null || cleanNote.isEmpty ? null : cleanNote,
-              DateTime.now().toIso8601String(),
-            ],
-          );
-        } else {
-          await transaction.execute(
-            'INSERT INTO $table (nombre, creado_en) VALUES (?, ?)',
-            [cleanName, DateTime.now().toIso8601String()],
-          );
-        }
-      } else if (kind == CatalogKind.measures) {
+        await transaction.execute(
+          'INSERT INTO $table (nombre, nota, creado_en) VALUES (?, ?, ?)',
+          [
+            cleanName,
+            cleanNote == null || cleanNote.isEmpty ? null : cleanNote,
+            DateTime.now().toIso8601String(),
+          ],
+        );
+      } else {
         await transaction.execute(
           'UPDATE $table SET nombre = ?, nota = ? WHERE id = ? AND eliminado_en IS NULL',
           [
@@ -85,11 +78,6 @@ class SqliteFoodRepository implements FoodRepository {
             cleanNote == null || cleanNote.isEmpty ? null : cleanNote,
             id,
           ],
-        );
-      } else {
-        await transaction.execute(
-          'UPDATE $table SET nombre = ? WHERE id = ? AND eliminado_en IS NULL',
-          [cleanName, id],
         );
       }
     });

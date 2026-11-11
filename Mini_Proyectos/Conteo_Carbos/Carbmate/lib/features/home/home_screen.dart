@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:carbmate/app/app_config.dart';
 import 'package:carbmate/core/text/search_text.dart';
 import 'package:carbmate/features/calculator/calculator_screen.dart';
 import 'package:carbmate/features/catalog/catalog_maintenance_screen.dart';
@@ -363,6 +364,13 @@ class _AboutScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 Text(
                   '© ${DateTime.now().year} Vialesoft',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Versión ${AppConfig.version}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

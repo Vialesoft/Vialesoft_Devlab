@@ -1,7 +1,7 @@
 name: carbmate
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.1.1+3
 
 environment:
   sdk: ^3.13.5
@@ -23,5 +23,6 @@ flutter:
     - assets/database/migrations/initial_db.sql
     - assets/database/migrations/datos_iniciales.sql
     - assets/database/migrations/add_measure_eliminable.sql
+    - assets/database/migrations/add_notes_to_brands_and_tags.sql
     - assets/images/carbmate_mascot.png
     - assets/images/carbmate_launcher.png
