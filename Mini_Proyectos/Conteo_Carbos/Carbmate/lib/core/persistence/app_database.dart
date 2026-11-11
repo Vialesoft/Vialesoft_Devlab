@@ -29,6 +29,14 @@ class AppDatabase {
         );
         await transaction.executeMultiple(migration);
       }),
+    )
+    ..add(
+      SqliteMigration(3, (transaction) async {
+        final migration = await rootBundle.loadString(
+          'assets/database/migrations/add_notes_to_brands_and_tags.sql',
+        );
+        await transaction.executeMultiple(migration);
+      }),
     );
 
   final SqliteDatabase connection;

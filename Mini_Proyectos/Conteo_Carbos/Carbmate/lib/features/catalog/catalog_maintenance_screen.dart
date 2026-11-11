@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:carbmate/core/text/search_text.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 
 class CatalogMaintenanceScreen extends StatefulWidget {
@@ -23,13 +24,31 @@ class CatalogMaintenanceScreen extends StatefulWidget {
 
 class _CatalogMaintenanceScreenState extends State<CatalogMaintenanceScreen> {
   List<MaintenanceCatalogEntry> _entries = const [];
+  final _searchController = TextEditingController();
   Object? _loadError;
   bool _isLoading = true;
+
+  bool get _hasSearchField =>
+      widget.kind == CatalogKind.brands || widget.kind == CatalogKind.tags;
+
+  List<MaintenanceCatalogEntry> get _visibleEntries {
+    final query = normalizeSearchText(_searchController.text.trim());
+    if (!_hasSearchField || query.isEmpty) return _entries;
+    return _entries
+        .where((entry) => normalizeSearchText(entry.name).contains(query))
+        .toList();
+  }
 
   @override
   void initState() {
     super.initState();
     _loadEntries();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadEntries() async {
@@ -58,7 +77,7 @@ class _CatalogMaintenanceScreenState extends State<CatalogMaintenanceScreen> {
       context: context,
       builder: (_) => _CatalogEntryDialog(
         entry: entry,
-        isMeasure: widget.kind == CatalogKind.measures,
+        supportsNote: true,
       ),
     );
     if (!mounted || result == null) return;
@@ -106,24 +125,64 @@ class _CatalogMaintenanceScreenState extends State<CatalogMaintenanceScreen> {
         ),
       );
     }
-    if (_entries.isEmpty) {
+    if (_entries.isEmpty && !_hasSearchField) {
       return Center(child: Text('Todavía no hay ${widget.title.toLowerCase()}'));
     }
-    return ListView.separated(
-      itemCount: _entries.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final entry = _entries[index];
-        return ListTile(
-          leading: Icon(widget.icon),
-          title: Text(entry.name),
-          subtitle: widget.kind == CatalogKind.measures && entry.note != null
-              ? Text(entry.note!)
-              : null,
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => _editEntry(entry),
-        );
-      },
+
+    final visibleEntries = _visibleEntries;
+    return Column(
+      children: [
+        if (_hasSearchField)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: TextField(
+              key: const Key('catalog-search'),
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Buscar ${widget.title.toLowerCase()}',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: 'Limpiar búsqueda',
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.close),
+                      ),
+                border: const OutlineInputBorder(),
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+          ),
+        Expanded(
+          child: visibleEntries.isEmpty
+              ? Center(
+                  child: Text(
+                    _entries.isEmpty
+                        ? 'Todavía no hay ${widget.title.toLowerCase()}'
+                        : 'No se encontraron coincidencias.',
+                  ),
+                )
+              : ListView.separated(
+                  itemCount: visibleEntries.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final entry = visibleEntries[index];
+                    return ListTile(
+                      leading: Icon(widget.icon),
+                      title: Text(entry.name),
+                      subtitle: entry.note == null || entry.note!.isEmpty
+                          ? null
+                          : Text(entry.note!),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _editEntry(entry),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
@@ -145,10 +204,10 @@ class _CatalogDialogResult {
 }
 
 class _CatalogEntryDialog extends StatefulWidget {
-  const _CatalogEntryDialog({required this.entry, required this.isMeasure});
+  const _CatalogEntryDialog({required this.entry, required this.supportsNote});
 
   final MaintenanceCatalogEntry? entry;
-  final bool isMeasure;
+  final bool supportsNote;
 
   @override
   State<_CatalogEntryDialog> createState() => _CatalogEntryDialogState();
@@ -195,14 +254,17 @@ class _CatalogEntryDialogState extends State<_CatalogEntryDialog> {
                 }
               },
             ),
-            if (widget.isMeasure) ...[
+            if (widget.supportsNote) ...[
               const SizedBox(height: 12),
               TextField(
                 controller: _noteController,
                 textCapitalization: TextCapitalization.sentences,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Nota'),
+                decoration: const InputDecoration(
+                  labelText: 'Nota (opcional)',
+                  alignLabelWithHint: true,
+                ),
               ),
             ],
           ],
@@ -235,7 +297,7 @@ class _CatalogEntryDialogState extends State<_CatalogEntryDialog> {
       context,
       _CatalogDialogResult.saved(
         name,
-        widget.isMeasure ? _noteController.text.trim() : null,
+        widget.supportsNote ? _noteController.text.trim() : null,
       ),
     );
   }

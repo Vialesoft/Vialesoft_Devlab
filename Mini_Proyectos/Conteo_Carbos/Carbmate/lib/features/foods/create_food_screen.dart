@@ -535,8 +535,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     final hasCarbohydratesPer100g =
         _parseNumber(_carbohydratesPer100gController.text) != null;
     final hasMeasures = _collectMeasures().isNotEmpty;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(_isEditing ? 'Editar alimento' : 'Crear alimento'),
         actions: [
@@ -557,24 +559,24 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
             ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FilledButton.icon(
-                onPressed: _isSaving || _isDeleting ? null : _saveFood,
-                icon: _isSaving
-                    ? const SizedBox.square(
-                        dimension: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.save),
-                label: const Text('Guardar'),
-              ),
-            ],
+      bottomNavigationBar: AnimatedPadding(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: keyboardInset),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+            child: FilledButton.icon(
+              onPressed: _isSaving || _isDeleting ? null : _saveFood,
+              icon: _isSaving
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save),
+              label: const Text('Guardar'),
+            ),
           ),
         ),
       ),
@@ -720,6 +722,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                         IconButton(
                           key: const Key('remove-100g-measure'),
                           tooltip: 'Quitar medida de 100 g',
+                          color: Colors.red.shade700,
                           onPressed: () {
                             setState(() {
                               _show100gMeasure = false;
@@ -844,6 +847,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                 ),
                 IconButton(
                   tooltip: 'Quitar medida',
+                  color: Colors.red.shade700,
                   onPressed: () {
                     setState(() => _additionalMeasures.removeAt(index));
                     row.dispose();
