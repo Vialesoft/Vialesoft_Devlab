@@ -1,4 +1,5 @@
 import 'package:carbmate/app/app.dart';
+import 'package:carbmate/features/calculator/calculator_screen.dart';
 import 'package:carbmate/features/foods/create_food_screen.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 import 'package:flutter/material.dart';
@@ -97,10 +98,141 @@ void main() {
       ['7:100.0:45.5', '5:120.0:54.0'],
     );
   });
+
+  testWidgets('recalcula CHO cada 100 g al guardar una preparación', (
+    tester,
+  ) async {
+    final repository = _FakeFoodRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CreateFoodScreen(
+          repository: repository,
+          initialFood: const NewFood(
+            name: '',
+            tagIds: [],
+            isPreparation: true,
+            isWeightEstimated: true,
+            measures: [
+              FoodMeasureDraft(
+                measureId: 4,
+                productGrams: 1000,
+                carbohydrateGrams: 200,
+              ),
+              FoodMeasureDraft(
+                measureId: 7,
+                productGrams: 100,
+                carbohydrateGrams: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('food-name')), 'Pan de banana');
+    await tester.enterText(
+      find.byKey(const Key('preparation-final-weight')),
+      '2500',
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('carbohydrates-per-100g')),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      tester
+          .widget<TextFormField>(
+            find.byKey(const Key('carbohydrates-per-100g')),
+          )
+          .controller
+          ?.text,
+      '8',
+    );
+    await tester.tap(find.text('Guardar'));
+    await tester.pumpAndSettle();
+
+    expect(repository.savedFood?.isPreparation, isTrue);
+    expect(repository.savedFood?.isWeightEstimated, isFalse);
+    expect(repository.savedFood?.name, startsWith('Pan de banana ('));
+    final savedMeasures = repository.savedFood!.measures;
+    final unit = savedMeasures.firstWhere((measure) => measure.measureId == 4);
+    final hundredGrams = savedMeasures.firstWhere(
+      (measure) => measure.measureId == 7,
+    );
+    expect(unit.productGrams, 2500);
+    expect(unit.carbohydrateGrams, 200);
+    expect(hundredGrams.carbohydrateGrams, 8);
+  });
+
+  testWidgets('guarda como preparación desde la calculadora', (tester) async {
+    final repository = _FakeFoodRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CalculatorScreen(
+          repository: repository,
+          session: CalculatorSession(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('calculator-food-search')),
+      'Pan',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pan lactal').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('save-as-preparation')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('food-name')), 'Pan casero');
+    await tester.tap(find.text('Guardar'));
+    await tester.pumpAndSettle();
+
+    expect(repository.savedFood?.name, startsWith('Pan casero ('));
+    expect(repository.savedFood?.isPreparation, isTrue);
+    expect(repository.savedFood?.measures, hasLength(2));
+  });
+
+  testWidgets('filtra la lista de alimentos por preparaciones', (tester) async {
+    final repository = _FakeFoodRepository()
+      ..foods = const [
+        FoodListItem(
+          id: 1,
+          name: 'Leche',
+          brandName: null,
+          tags: [],
+        ),
+        FoodListItem(
+          id: 2,
+          name: 'Pan de banana (11/11/26)',
+          brandName: null,
+          tags: [],
+          isPreparation: true,
+        ),
+      ];
+    await tester.pumpWidget(CarbmateApp(repository: repository));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('food-list-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Preparaciones'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Leche'), findsNothing);
+    expect(find.text('Pan de banana (11/11/26)'), findsOneWidget);
+  });
 }
 
 class _FakeFoodRepository implements FoodRepository {
   NewFood? savedFood;
+  List<FoodListItem> foods = const [
+    FoodListItem(id: 1, name: 'Pan lactal', brandName: 'Lays', tags: ['Pan']),
+  ];
 
   @override
   Future<List<MaintenanceCatalogEntry>> loadCatalogEntries(
@@ -119,9 +251,7 @@ class _FakeFoodRepository implements FoodRepository {
   Future<void> deleteCatalogEntry(CatalogKind kind, int id) async {}
 
   @override
-  Future<List<FoodListItem>> loadFoods() async => const [
-    FoodListItem(id: 1, name: 'Pan lactal', brandName: 'Lays', tags: ['Pan']),
-  ];
+  Future<List<FoodListItem>> loadFoods() async => foods;
 
   @override
   Future<FoodFormOptions> loadFormOptions() async {
@@ -137,7 +267,20 @@ class _FakeFoodRepository implements FoodRepository {
   }
 
   @override
-  Future<FoodDetails?> loadFood(int id) async => null;
+  Future<FoodDetails?> loadFood(int id) async => FoodDetails(
+    id: id,
+    food: NewFood(
+      name: 'Pan lactal',
+      tagIds: const [1],
+      measures: const [
+        FoodMeasureDraft(
+          measureId: 7,
+          productGrams: 100,
+          carbohydrateGrams: 10,
+        ),
+      ],
+    ),
+  );
 
   @override
   Future<void> createFood(NewFood food) async {

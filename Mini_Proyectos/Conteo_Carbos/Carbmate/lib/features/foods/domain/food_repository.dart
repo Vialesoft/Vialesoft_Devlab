@@ -40,6 +40,9 @@ class FoodListItem {
     required this.brandName,
     required this.tags,
     this.carbohydrateSummaries = const [],
+    this.isFavorite = false,
+    this.isPreparation = false,
+    this.isWeightEstimated = false,
   });
 
   final int id;
@@ -47,6 +50,9 @@ class FoodListItem {
   final String? brandName;
   final List<String> tags;
   final List<FoodCarbohydrateSummary> carbohydrateSummaries;
+  final bool isFavorite;
+  final bool isPreparation;
+  final bool isWeightEstimated;
 }
 
 class FoodCarbohydrateSummary {
@@ -79,12 +85,20 @@ class NewFood {
     required this.tagIds,
     required this.measures,
     this.brandId,
+    this.note,
+    this.isFavorite = false,
+    this.isPreparation = false,
+    this.isWeightEstimated = false,
   });
 
   final String name;
   final int? brandId;
   final List<int> tagIds;
   final List<FoodMeasureDraft> measures;
+  final String? note;
+  final bool isFavorite;
+  final bool isPreparation;
+  final bool isWeightEstimated;
 }
 
 class FoodDetails {

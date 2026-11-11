@@ -45,6 +45,30 @@ void main() {
             );
             await transaction.executeMultiple(migration);
           }),
+        )
+        ..add(
+          SqliteMigration(3, (transaction) async {
+            final migration = await rootBundle.loadString(
+              'assets/database/migrations/add_notes_to_brands_and_tags.sql',
+            );
+            await transaction.executeMultiple(migration);
+          }),
+        )
+        ..add(
+          SqliteMigration(4, (transaction) async {
+            final migration = await rootBundle.loadString(
+              'assets/database/migrations/add_food_favorites_and_notes.sql',
+            );
+            await transaction.executeMultiple(migration);
+          }),
+        )
+        ..add(
+          SqliteMigration(5, (transaction) async {
+            final migration = await rootBundle.loadString(
+              'assets/database/migrations/add_preparation_food_type.sql',
+            );
+            await transaction.executeMultiple(migration);
+          }),
         );
       await migrations.migrate(database);
 
@@ -89,6 +113,8 @@ void main() {
               carbohydrateGrams: 54,
             ),
           ],
+          isPreparation: true,
+          isWeightEstimated: true,
         ),
       );
 
@@ -112,6 +138,14 @@ void main() {
       expect(measures[0]['confianza'], isNull);
       expect(measures[1]['grs_cho'], 45.5);
       expect(measures[1]['confianza'], isNull);
+      final loadedFood = await repository.loadFood(foodId);
+      expect(loadedFood?.food.isPreparation, isTrue);
+      expect(loadedFood?.food.isWeightEstimated, isTrue);
+      final listItem = (await repository.loadFoods()).singleWhere(
+        (item) => item.id == foodId,
+      );
+      expect(listItem.isPreparation, isTrue);
+      expect(listItem.isWeightEstimated, isTrue);
       expect(tags, hasLength(1));
       expect(await database.getAll('PRAGMA foreign_key_check'), isEmpty);
 

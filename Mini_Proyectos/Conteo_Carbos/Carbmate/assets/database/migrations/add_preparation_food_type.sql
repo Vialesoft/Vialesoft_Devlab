@@ -1,0 +1,5 @@
+ALTER TABLE PRODUCTO ADD COLUMN es_preparacion INTEGER NOT NULL DEFAULT 0
+    CHECK (es_preparacion IN (0, 1));
+
+ALTER TABLE PRODUCTO ADD COLUMN peso_estimado INTEGER NOT NULL DEFAULT 0
+    CHECK (peso_estimado IN (0, 1));

@@ -5,10 +5,16 @@ import 'package:carbmate/core/text/search_text.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 
 class CreateFoodScreen extends StatefulWidget {
-  const CreateFoodScreen({super.key, required this.repository, this.foodId});
+  const CreateFoodScreen({
+    super.key,
+    required this.repository,
+    this.foodId,
+    this.initialFood,
+  });
 
   final FoodRepository repository;
   final int? foodId;
+  final NewFood? initialFood;
 
   @override
   State<CreateFoodScreen> createState() => _CreateFoodScreenState();
@@ -19,7 +25,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
   final _carbohydratesPer100gFieldKey = GlobalKey();
   final _carbohydratesPer100gFocusNode = FocusNode();
   final _nameController = TextEditingController();
+  final _noteController = TextEditingController();
   final _carbohydratesPer100gController = TextEditingController();
+  final _preparationWeightController = TextEditingController();
+  final _preparationCarbohydratesController = TextEditingController();
   final _additionalMeasures = <_AdditionalMeasureInput>[];
   final _selectedTagIds = <int>{};
   final _existingMeasureIds = <int>{};
@@ -27,6 +36,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
   late final Future<FoodFormOptions> _optionsFuture;
   int? _brandId;
   int? _measure100gId;
+  int? _unitMeasureId;
+  bool _isFavorite = false;
+  bool _isPreparation = false;
+  bool _isWeightEstimated = false;
   String? _confidence100g;
   bool _show100gMeasure = true;
   bool _carbohydratesPer100gWasCalculated = false;
@@ -48,6 +61,12 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
       orElse: () => throw StateError('No existe la medida 100 g.'),
     );
     _measure100gId = defaultMeasure.id;
+    for (final measure in options.measures) {
+      if (measure.name == 'Unidad') {
+        _unitMeasureId = measure.id;
+        break;
+      }
+    }
 
     final foodId = widget.foodId;
     if (foodId != null) {
@@ -56,6 +75,16 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
         throw StateError('No se encontró el alimento.');
       }
       _loadFoodIntoForm(details.food);
+    } else if (widget.initialFood case final initialFood?) {
+      _loadFoodIntoForm(initialFood);
+      if (initialFood.isPreparation) {
+        for (final tag in options.tags) {
+          if (normalizeSearchText(tag.name) == 'preparacion') {
+            _selectedTagIds.add(tag.id);
+            break;
+          }
+        }
+      }
     }
 
     return options;
@@ -63,7 +92,11 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
 
   void _loadFoodIntoForm(NewFood food) {
     _nameController.text = food.name;
+    _noteController.text = food.note ?? '';
     _brandId = food.brandId;
+    _isFavorite = food.isFavorite;
+    _isPreparation = food.isPreparation;
+    _isWeightEstimated = food.isWeightEstimated;
     _selectedTagIds.addAll(food.tagIds);
     _show100gMeasure = false;
 
@@ -74,6 +107,11 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
         _carbohydratesPer100gController.text =
             measure.carbohydrateGrams?.toString() ?? '';
         _confidence100g = measure.confidence;
+      } else if (_isPreparation && measure.measureId == _unitMeasureId) {
+        _preparationWeightController.text =
+            measure.productGrams?.toString() ?? '';
+        _preparationCarbohydratesController.text =
+            measure.carbohydrateGrams?.toString() ?? '';
       } else {
         _additionalMeasures.add(
           _AdditionalMeasureInput(
@@ -86,12 +124,46 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
         );
       }
     }
+    if (_isPreparation) _recalculatePreparationDensity();
+  }
+
+  void _recalculatePreparationDensity() {
+    if (!_isPreparation) return;
+    final weight = _parseNumber(_preparationWeightController.text);
+    final carbohydrates = _parseNumber(
+      _preparationCarbohydratesController.text,
+    );
+    if (weight == null || weight <= 0 || carbohydrates == null) {
+      _carbohydratesPer100gController.clear();
+      _carbohydratesPer100gWasCalculated = false;
+      return;
+    }
+    final per100g = carbohydrates * 100 / weight;
+    _carbohydratesPer100gController.text = _formatNumber(per100g);
+    _show100gMeasure = true;
+    _carbohydratesPer100gWasCalculated = true;
+  }
+
+  String _preparationNameForSave() {
+    final name = _nameController.text.trim();
+    if (!_isPreparation || widget.initialFood?.isPreparation != true) {
+      return name;
+    }
+    final now = DateTime.now();
+    final date = '${now.day.toString().padLeft(2, '0')}/'
+        '${now.month.toString().padLeft(2, '0')}/'
+        '${(now.year % 100).toString().padLeft(2, '0')}';
+    if (name.endsWith('($date)')) return name;
+    return '$name ($date)';
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _noteController.dispose();
     _carbohydratesPer100gController.dispose();
+    _preparationWeightController.dispose();
+    _preparationCarbohydratesController.dispose();
     _carbohydratesPer100gFocusNode.dispose();
     for (final measure in _additionalMeasures) {
       measure.dispose();
@@ -183,6 +255,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
   }
 
   Future<List<_CarbohydrateMismatch>> _findCarbohydrateMismatches() async {
+    if (_isPreparation) return [];
     const toleranceGramsPer100g = 1.0;
     final current = _parseNumber(_carbohydratesPer100gController.text);
     if (current == null) return [];
@@ -363,6 +436,22 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
       );
     }
 
+    if (_isPreparation && _unitMeasureId != null) {
+      final productGrams = _parseNumber(_preparationWeightController.text);
+      final carbohydrates = _parseNumber(
+        _preparationCarbohydratesController.text,
+      );
+      if (productGrams != null || carbohydrates != null) {
+        measures.add(
+          FoodMeasureDraft(
+            measureId: _unitMeasureId!,
+            productGrams: productGrams,
+            carbohydrateGrams: carbohydrates,
+          ),
+        );
+      }
+    }
+
     for (final measure in _additionalMeasures) {
       final productGrams = _parseNumber(measure.productGrams.text);
       final carbohydrateGrams = _parseNumber(measure.carbohydrates.text);
@@ -405,10 +494,14 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     setState(() => _isSaving = true);
     try {
       final food = NewFood(
-        name: _nameController.text.trim(),
+        name: _preparationNameForSave(),
         brandId: _brandId,
         tagIds: _selectedTagIds.toList(),
         measures: _collectMeasures(),
+        note: _noteController.text,
+        isFavorite: _isFavorite,
+        isPreparation: _isPreparation,
+        isWeightEstimated: _isPreparation && _isWeightEstimated,
       );
       if (_isEditing) {
         await widget.repository.updateFood(widget.foodId!, food);
@@ -420,7 +513,11 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isEditing ? 'Cambios guardados.' : 'Alimento guardado.',
+            _isEditing
+                ? 'Cambios guardados.'
+                : _isPreparation
+                ? 'Preparación guardada.'
+                : 'Alimento guardado.',
           ),
         ),
       );
@@ -535,13 +632,36 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     final hasCarbohydratesPer100g =
         _parseNumber(_carbohydratesPer100gController.text) != null;
     final hasMeasures = _collectMeasures().isNotEmpty;
-    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
-
+    final hasPreparationTag = options.tags.any(
+      (tag) =>
+          normalizeSearchText(tag.name) == 'preparacion' &&
+          _selectedTagIds.contains(tag.id),
+    );
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(_isEditing ? 'Editar alimento' : 'Crear alimento'),
+        title: Text(
+          _isEditing
+              ? 'Editar alimento'
+              : _isPreparation
+              ? 'Guardar preparación'
+              : 'Crear alimento',
+        ),
         actions: [
+          IconButton(
+            key: const Key('toggle-food-favorite'),
+            tooltip: _isFavorite
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos',
+            onPressed: _isSaving || _isDeleting
+                ? null
+                : () => setState(() => _isFavorite = !_isFavorite),
+            icon: Icon(
+              _isFavorite ? Icons.star : Icons.star_border,
+              color: _isFavorite
+                  ? Colors.amber.shade700
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           if (_isEditing)
             IconButton(
               key: const Key('delete-food'),
@@ -559,24 +679,19 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
             ),
         ],
       ),
-      bottomNavigationBar: AnimatedPadding(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.only(bottom: keyboardInset),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-            child: FilledButton.icon(
-              onPressed: _isSaving || _isDeleting ? null : _saveFood,
-              icon: _isSaving
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save),
-              label: const Text('Guardar'),
-            ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+          child: FilledButton.icon(
+            onPressed: _isSaving || _isDeleting ? null : _saveFood,
+            icon: _isSaving
+                ? const SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save),
+            label: const Text('Guardar'),
           ),
         ),
       ),
@@ -588,8 +703,11 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
             TextFormField(
               key: const Key('food-name'),
               controller: _nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Nombre *',
+                helperText: widget.initialFood?.isPreparation == true
+                    ? 'Se agregará la fecha actual al nombre.'
+                    : null,
                 border: OutlineInputBorder(),
               ),
               textCapitalization: TextCapitalization.sentences,
@@ -673,7 +791,79 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                 message: 'No hay tags asociados. Podés continuar sin ellos.',
               ),
             ],
+            if (_isPreparation && !hasPreparationTag) ...[
+              const SizedBox(height: 8),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Chip(
+                  avatar: Icon(Icons.restaurant_outlined, size: 18),
+                  label: Text('Preparación'),
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
+            if (_isPreparation) ...[
+              const SizedBox(height: 8),
+              TextFormField(
+                key: const Key('preparation-final-weight'),
+                controller: _preparationWeightController,
+                decoration: const InputDecoration(
+                  labelText: 'Peso final de la preparación',
+                  suffixText: 'g',
+                  helperText:
+                      'Ajustalo si el peso cocido difiere de la suma de ingredientes.',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
+                ],
+                validator: _validateProductGrams,
+                onChanged: (_) => setState(() {
+                  _isWeightEstimated = false;
+                  _recalculatePreparationDensity();
+                }),
+              ),
+              if (_isWeightEstimated) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: Colors.orange.shade700,
+                    ),
+                    const SizedBox(width: 6),
+                    const Expanded(
+                      child: Text(
+                        'Estimación: faltan pesos de algunos ingredientes.',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('preparation-total-carbohydrates'),
+                controller: _preparationCarbohydratesController,
+                decoration: const InputDecoration(
+                  labelText: 'CHO totales de la preparación',
+                  suffixText: 'g CHO',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
+                ],
+                validator: _validateOptionalNumber,
+                onChanged: (_) => setState(_recalculatePreparationDensity),
+              ),
+              const SizedBox(height: 24),
+            ],
             Text('Medidas', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             if (_show100gMeasure) ...[
@@ -699,6 +889,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                             key: const Key('carbohydrates-per-100g'),
                             focusNode: _carbohydratesPer100gFocusNode,
                             controller: _carbohydratesPer100gController,
+                            readOnly: _isPreparation,
                             decoration: _measureInputDecoration(
                               labelText:
                                   'Carbohidratos por ${measure100g.name}',
@@ -719,20 +910,21 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          key: const Key('remove-100g-measure'),
-                          tooltip: 'Quitar medida de 100 g',
-                          color: Colors.red.shade700,
-                          onPressed: () {
-                            setState(() {
-                              _show100gMeasure = false;
-                              _carbohydratesPer100gController.clear();
-                              _carbohydratesPer100gWasCalculated = false;
-                              _confidence100g = null;
-                            });
-                          },
-                          icon: const Icon(Icons.delete_outline),
-                        ),
+                        if (!_isPreparation)
+                          IconButton(
+                            key: const Key('remove-100g-measure'),
+                            tooltip: 'Quitar medida de 100 g',
+                            color: Colors.red.shade700,
+                            onPressed: () {
+                              setState(() {
+                                _show100gMeasure = false;
+                                _carbohydratesPer100gController.clear();
+                                _carbohydratesPer100gWasCalculated = false;
+                                _confidence100g = null;
+                              });
+                            },
+                            icon: const Icon(Icons.delete_outline),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -745,7 +937,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                   ],
                 ),
               ),
-            ] else
+            ] else if (!_isPreparation)
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
@@ -775,6 +967,19 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                 message: 'No hay medidas asociadas. Podés continuar sin ellas.',
               ),
             ],
+            const SizedBox(height: 20),
+            TextFormField(
+              key: const Key('food-note'),
+              controller: _noteController,
+              textCapitalization: TextCapitalization.sentences,
+              minLines: 3,
+              maxLines: 6,
+              decoration: const InputDecoration(
+                labelText: 'Nota (opcional)',
+                alignLabelWithHint: true,
+                border: OutlineInputBorder(),
+              ),
+            ),
             const SizedBox(height: 28),
           ],
         ),

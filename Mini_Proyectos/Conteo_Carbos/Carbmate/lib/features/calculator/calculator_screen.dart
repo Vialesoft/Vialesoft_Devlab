@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:carbmate/core/text/search_text.dart';
+import 'package:carbmate/features/foods/create_food_screen.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 
 class CalculatorScreen extends StatefulWidget {
@@ -19,22 +20,87 @@ class CalculatorScreen extends StatefulWidget {
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
-  late final Future<_CalculatorData> _dataFuture = _loadData();
+  late Future<_CalculatorData> _dataFuture;
   TextEditingController? _searchController;
 
   List<_CalculatorEntry> get _entries => widget.session._entries;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = _loadData();
+  }
 
   Future<_CalculatorData> _loadData() async {
     final foodsFuture = widget.repository.loadFoods();
     final optionsFuture = widget.repository.loadFormOptions();
     final foods = await foodsFuture;
     final options = await optionsFuture;
+    int? unitMeasureId;
+    int? hundredGramMeasureId;
+    for (final measure in options.measures) {
+      if (measure.name == 'Unidad') unitMeasureId = measure.id;
+      if (measure.name == '100 g') hundredGramMeasureId = measure.id;
+    }
     return _CalculatorData(
       foods: foods,
       measureNames: {
         for (final measure in options.measures) measure.id: measure.name,
       },
+      unitMeasureId: unitMeasureId,
+      hundredGramMeasureId: hundredGramMeasureId,
     );
+  }
+
+  Future<void> _saveAsPreparation() async {
+    if (_entries.isEmpty) return;
+    final data = await _dataFuture;
+    if (!mounted) return;
+    final unitMeasureId = data.unitMeasureId;
+    if (unitMeasureId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No existe la medida Unidad.')),
+      );
+      return;
+    }
+
+    final totalCarbohydrates = _totalCarbohydrates;
+    final totalWeight = _totalWeight;
+    final measures = <FoodMeasureDraft>[
+      FoodMeasureDraft(
+        measureId: unitMeasureId,
+        productGrams: totalWeight > 0 ? totalWeight : null,
+        carbohydrateGrams: totalCarbohydrates,
+      ),
+      if (totalWeight > 0 && data.hundredGramMeasureId != null)
+        FoodMeasureDraft(
+          measureId: data.hundredGramMeasureId!,
+          productGrams: 100,
+          carbohydrateGrams: totalCarbohydrates * 100 / totalWeight,
+        ),
+    ];
+
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => CreateFoodScreen(
+          repository: widget.repository,
+          initialFood: NewFood(
+            name: '',
+            tagIds: const [],
+            measures: measures,
+            isPreparation: true,
+            isWeightEstimated: _hasUnknownWeight,
+          ),
+        ),
+      ),
+    );
+    if (saved == true && mounted) {
+      setState(() {
+        _entries.clear();
+        _dataFuture = _loadData();
+      });
+      _searchController?.clear();
+    }
   }
 
   Future<void> _selectFood(FoodListItem food, _CalculatorData data) async {
@@ -314,14 +380,16 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           final entry = _entries[index];
                           final missingWeight =
                               entry.measure.gramsPerUse == null;
+                          final weightWarning =
+                              missingWeight || entry.food.isWeightEstimated;
                           return Card(
                             margin: const EdgeInsets.symmetric(vertical: 5),
-                            color: missingWeight
+                            color: weightWarning
                                 ? colorScheme.tertiaryContainer.withValues(
                                     alpha: 0.35,
                                   )
                                 : colorScheme.surface,
-                            elevation: missingWeight ? 0 : 1,
+                            elevation: weightWarning ? 0 : 1,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(
@@ -395,14 +463,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.end,
                                       children: [
-                                        if (missingWeight)
+                                        if (weightWarning)
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               bottom: 2,
                                             ),
                                             child: Tooltip(
-                                              message:
-                                                  'Falta cargar el peso de esta medida.',
+                                              message: missingWeight
+                                                  ? 'Falta cargar el peso de esta medida.'
+                                                  : 'El peso de esta preparación es estimado.',
                                               child: Icon(
                                                 Icons.info_outline,
                                                 size: 16,
@@ -467,6 +536,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 value: '${_formatNumber(_totalCarbohydrates)} g',
                 emphasize: true,
               ),
+              if (_entries.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  key: const Key('save-as-preparation'),
+                  onPressed: _saveAsPreparation,
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text('Guardar preparación'),
+                ),
+              ],
             ],
           ),
         ),
@@ -529,7 +607,22 @@ class _FoodSearchResult extends StatelessWidget {
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       title: Text(food.name, style: Theme.of(context).textTheme.titleLarge),
-      trailing: const Icon(Icons.chevron_right),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (food.isFavorite)
+            Icon(Icons.star, color: Colors.amber.shade700, size: 20),
+          if (food.isPreparation)
+            const Icon(Icons.restaurant_outlined, size: 20),
+          if (food.isWeightEstimated)
+            Icon(
+              Icons.info_outline,
+              color: Colors.orange.shade700,
+              size: 18,
+            ),
+          const Icon(Icons.chevron_right),
+        ],
+      ),
       subtitle: !hasBrand && details.isEmpty
           ? null
           : Text.rich(
@@ -704,10 +797,17 @@ class _AddIngredientDialogState extends State<_AddIngredientDialog> {
 }
 
 class _CalculatorData {
-  const _CalculatorData({required this.foods, required this.measureNames});
+  const _CalculatorData({
+    required this.foods,
+    required this.measureNames,
+    required this.unitMeasureId,
+    required this.hundredGramMeasureId,
+  });
 
   final List<FoodListItem> foods;
   final Map<int, String> measureNames;
+  final int? unitMeasureId;
+  final int? hundredGramMeasureId;
 }
 
 class _CalculatorMeasureOption {

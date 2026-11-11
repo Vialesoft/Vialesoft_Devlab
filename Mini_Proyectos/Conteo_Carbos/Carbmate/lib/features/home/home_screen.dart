@@ -21,8 +21,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final _calculatorSession = CalculatorSession();
   List<FoodListItem> _foods = const [];
   String _query = '';
+  _FoodListFilter _foodListFilter = _FoodListFilter.all;
   Object? _loadError;
   bool _isLoading = true;
+
+  String get _filterTooltip => switch (_foodListFilter) {
+    _FoodListFilter.all => 'Filtrar alimentos',
+    _FoodListFilter.favorites => 'Filtro: favoritos',
+    _FoodListFilter.preparations => 'Filtro: preparaciones',
+  };
 
   @override
   void initState() {
@@ -71,8 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (changed == true && mounted) await _loadFoods();
   }
 
-  void _openCalculator() {
-    Navigator.of(context).push<void>(
+  Future<void> _openCalculator() async {
+    await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => CalculatorScreen(
           repository: widget.repository,
@@ -80,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+    if (mounted) await _loadFoods();
   }
 
   void _openAbout() {
@@ -114,6 +122,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final query = normalizeSearchText(_query.trim());
     final visibleFoods = _foods.where((food) {
+      if (_foodListFilter == _FoodListFilter.favorites && !food.isFavorite) {
+        return false;
+      }
+      if (_foodListFilter == _FoodListFilter.preparations &&
+          !food.isPreparation) {
+        return false;
+      }
       if (query.isEmpty) return true;
       final searchableText = [
         food.name,
@@ -186,9 +201,58 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: InputDecoration(
                 hintText: 'Buscar alimentos',
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.isEmpty
-                    ? null
-                    : IconButton(
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    PopupMenuButton<_FoodListFilter>(
+                      key: const Key('food-list-filter'),
+                      tooltip: _filterTooltip,
+                      initialValue: _foodListFilter,
+                      onSelected: (value) =>
+                          setState(() => _foodListFilter = value),
+                      icon: Icon(
+                        switch (_foodListFilter) {
+                          _FoodListFilter.all => Icons.filter_list,
+                          _FoodListFilter.favorites => Icons.star,
+                          _FoodListFilter.preparations =>
+                            Icons.restaurant_outlined,
+                        },
+                        color: switch (_foodListFilter) {
+                          _FoodListFilter.all => null,
+                          _FoodListFilter.favorites => Colors.amber.shade800,
+                          _FoodListFilter.preparations =>
+                            Theme.of(context).colorScheme.primary,
+                        },
+                      ),
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(
+                          value: _FoodListFilter.all,
+                          child: ListTile(
+                            leading: Icon(Icons.filter_list),
+                            title: Text('Todos los alimentos'),
+                            dense: true,
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: _FoodListFilter.favorites,
+                          child: ListTile(
+                            leading: Icon(Icons.star_outline),
+                            title: Text('Favoritos'),
+                            dense: true,
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: _FoodListFilter.preparations,
+                          child: ListTile(
+                            leading: Icon(Icons.restaurant_outlined),
+                            title: Text('Preparaciones'),
+                            dense: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (_query.isNotEmpty)
+                      IconButton(
                         tooltip: 'Limpiar búsqueda',
                         onPressed: () {
                           _searchController.clear();
@@ -196,6 +260,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         icon: const Icon(Icons.close),
                       ),
+                  ],
+                ),
                 border: const OutlineInputBorder(),
               ),
               onChanged: (value) => setState(() => _query = value),
@@ -251,8 +317,14 @@ class _HomeScreenState extends State<HomeScreen> {
     if (foods.isEmpty) {
       return Center(
         child: Text(
-          _query.trim().isEmpty
+          _foods.isEmpty
               ? 'Todavía no hay alimentos.'
+              : _foodListFilter == _FoodListFilter.favorites &&
+                    _query.trim().isEmpty
+              ? 'Todavía no hay alimentos favoritos.'
+              : _foodListFilter == _FoodListFilter.preparations &&
+                    _query.trim().isEmpty
+              ? 'Todavía no hay preparaciones guardadas.'
               : 'No se encontraron alimentos.',
         ),
       );
@@ -282,7 +354,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return ListTile(
           onTap: () => _openFoodEditor(foodId: food.id),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (food.isFavorite)
+                Icon(
+                  Icons.star,
+                  color: Colors.amber.shade700,
+                  semanticLabel: 'Favorito',
+                ),
+              if (food.isPreparation)
+                const Tooltip(
+                  message: 'Preparación',
+                  child: Icon(Icons.restaurant_outlined),
+                ),
+              if (food.isWeightEstimated)
+                Tooltip(
+                  message: 'El peso de esta preparación es estimado.',
+                  child: Icon(
+                    Icons.info_outline,
+                    color: Colors.orange.shade700,
+                  ),
+                ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
           title: Text(food.name, style: Theme.of(context).textTheme.titleLarge),
           subtitle: !hasBrand && additionalDetails.isEmpty
               ? null
@@ -314,6 +410,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+enum _FoodListFilter { all, favorites, preparations }
 
 class _AboutScreen extends StatelessWidget {
   const _AboutScreen();

@@ -118,14 +118,15 @@ class SqliteFoodRepository implements FoodRepository {
   @override
   Future<List<FoodListItem>> loadFoods() async {
     final rows = await _database.getAll(
-      'SELECT p.id, p.nombre, m.nombre AS marca, '
+      'SELECT p.id, p.nombre, p.es_favorito, p.es_preparacion, '
+      'p.peso_estimado, m.nombre AS marca, '
       "COALESCE((SELECT group_concat(t.nombre, '|') "
       'FROM PRODUCTO_TAG pt JOIN TAG t ON t.id = pt.id_tag '
       'WHERE pt.id_prod = p.id AND t.eliminado_en IS NULL), \'\') AS tags '
       'FROM PRODUCTO p LEFT JOIN MARCA m '
       'ON m.id = p.id_marca AND m.eliminado_en IS NULL '
       'WHERE p.eliminado_en IS NULL '
-      'ORDER BY p.nombre COLLATE NOCASE',
+      'ORDER BY p.es_favorito DESC, p.nombre COLLATE NOCASE',
     );
     final measureRows = await _database.getAll(
       'SELECT pm.id_prod, pm.grs_cho, m.nombre AS medida '
@@ -158,6 +159,9 @@ class SqliteFoodRepository implements FoodRepository {
               .where((tag) => tag.isNotEmpty)
               .toList(),
           carbohydrateSummaries: summariesByFood[row['id'] as int] ?? const [],
+          isFavorite: row['es_favorito'] == 1,
+          isPreparation: row['es_preparacion'] == 1,
+          isWeightEstimated: row['peso_estimado'] == 1,
         ),
     ];
   }
@@ -174,7 +178,8 @@ class SqliteFoodRepository implements FoodRepository {
   @override
   Future<FoodDetails?> loadFood(int id) async {
     final rows = await _database.getAll(
-      'SELECT id, nombre, id_marca FROM PRODUCTO '
+      'SELECT id, nombre, id_marca, nota, es_favorito, es_preparacion, '
+      'peso_estimado FROM PRODUCTO '
       'WHERE id = ? AND eliminado_en IS NULL',
       [id],
     );
@@ -196,6 +201,10 @@ class SqliteFoodRepository implements FoodRepository {
       food: NewFood(
         name: row['nombre'] as String,
         brandId: row['id_marca'] as int?,
+        note: row['nota'] as String?,
+        isFavorite: row['es_favorito'] == 1,
+        isPreparation: row['es_preparacion'] == 1,
+        isWeightEstimated: row['peso_estimado'] == 1,
         tagIds: [for (final tag in tagRows) tag['id_tag'] as int],
         measures: [
           for (final measure in measureRows)
@@ -226,8 +235,18 @@ class SqliteFoodRepository implements FoodRepository {
   Future<void> createFood(NewFood food) {
     return _database.writeTransaction((transaction) async {
       await transaction.execute(
-        'INSERT INTO PRODUCTO (nombre, id_marca, creado_en) VALUES (?, ?, ?)',
-        [food.name.trim(), food.brandId, DateTime.now().toIso8601String()],
+        'INSERT INTO PRODUCTO '
+        '(nombre, id_marca, nota, es_favorito, es_preparacion, '
+        'peso_estimado, creado_en) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          food.name.trim(),
+          food.brandId,
+          _cleanNote(food.note),
+          food.isFavorite ? 1 : 0,
+          food.isPreparation ? 1 : 0,
+          food.isWeightEstimated ? 1 : 0,
+          DateTime.now().toIso8601String(),
+        ],
       );
       final row = await transaction.get('SELECT last_insert_rowid() AS id');
       final foodId = row['id'] as int;
@@ -267,8 +286,17 @@ class SqliteFoodRepository implements FoodRepository {
       }
 
       await transaction.execute(
-        'UPDATE PRODUCTO SET nombre = ?, id_marca = ? WHERE id = ?',
-        [food.name.trim(), food.brandId, id],
+        'UPDATE PRODUCTO SET nombre = ?, id_marca = ?, nota = ?, '
+        'es_favorito = ?, es_preparacion = ?, peso_estimado = ? WHERE id = ?',
+        [
+          food.name.trim(),
+          food.brandId,
+          _cleanNote(food.note),
+          food.isFavorite ? 1 : 0,
+          food.isPreparation ? 1 : 0,
+          food.isWeightEstimated ? 1 : 0,
+          id,
+        ],
       );
 
       await transaction.execute('DELETE FROM PRODUCTO_TAG WHERE id_prod = ?', [
@@ -339,4 +367,9 @@ class SqliteFoodRepository implements FoodRepository {
       await transaction.execute('DELETE FROM PRODUCTO WHERE id = ?', [id]);
     });
   }
+}
+
+String? _cleanNote(String? note) {
+  final cleanNote = note?.trim();
+  return cleanNote == null || cleanNote.isEmpty ? null : cleanNote;
 }
