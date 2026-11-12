@@ -208,6 +208,45 @@ class RecipeListItem {
   bool get carbohydratesPer100gIsEstimated => cookedWeightGrams == null;
 }
 
+enum InsulinPenType {
+  toujeo('Toujeo', 'toujeo', 56),
+  novoRapid('NovoRapid', 'novorapid', 28);
+
+  const InsulinPenType(this.label, this.databaseValue, this.shelfLifeDays);
+
+  final String label;
+  final String databaseValue;
+  final int shelfLifeDays;
+
+  static InsulinPenType fromDatabaseValue(String value) => switch (value) {
+    'toujeo' => InsulinPenType.toujeo,
+    'novorapid' => InsulinPenType.novoRapid,
+    _ => throw ArgumentError.value(value, 'value', 'Tipo de lapicera invalido'),
+  };
+}
+
+class InsulinPen {
+  const InsulinPen({
+    required this.id,
+    required this.type,
+    required this.openedOn,
+    required this.shelfLifeDays,
+  });
+
+  final int id;
+  final InsulinPenType type;
+  final DateTime openedOn;
+  final int shelfLifeDays;
+
+  DateTime get expiresOn => openedOn.add(Duration(days: shelfLifeDays));
+
+  int daysRemaining(DateTime today) {
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final expiryDate = DateTime(expiresOn.year, expiresOn.month, expiresOn.day);
+    return expiryDate.difference(todayDate).inDays;
+  }
+}
+
 abstract interface class FoodRepository {
   Future<List<MaintenanceCatalogEntry>> loadCatalogEntries(CatalogKind kind);
 
@@ -254,4 +293,10 @@ abstract interface class FoodRepository {
   });
 
   Future<void> setRecipeFavorite(int id, bool isFavorite);
+
+  Future<List<InsulinPen>> loadInsulinPens();
+
+  Future<int> addInsulinPen(InsulinPenType type, DateTime openedOn);
+
+  Future<void> deleteInsulinPen(int id);
 }

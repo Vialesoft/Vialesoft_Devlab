@@ -611,6 +611,50 @@ class SqliteFoodRepository implements FoodRepository {
     });
   }
 
+  @override
+  Future<List<InsulinPen>> loadInsulinPens() async {
+    final rows = await _database.getAll(
+      'SELECT id, tipo, dias_vida_util, abierta_el '
+      'FROM LAPICERA_INSULINA ORDER BY abierta_el, id',
+    );
+    return [
+      for (final row in rows)
+        InsulinPen(
+          id: row['id'] as int,
+          type: InsulinPenType.fromDatabaseValue(row['tipo'] as String),
+          shelfLifeDays: row['dias_vida_util'] as int,
+          openedOn: DateTime.parse(row['abierta_el'] as String),
+        ),
+    ];
+  }
+
+  @override
+  Future<int> addInsulinPen(InsulinPenType type, DateTime openedOn) {
+    return _database.writeTransaction((transaction) async {
+      await transaction.execute(
+        'INSERT INTO LAPICERA_INSULINA '
+        '(tipo, dias_vida_util, abierta_el, creada_en) VALUES (?, ?, ?, ?)',
+        [
+          type.databaseValue,
+          type.shelfLifeDays,
+          _formatDateOnly(openedOn),
+          DateTime.now().toIso8601String(),
+        ],
+      );
+      final row = await transaction.get('SELECT last_insert_rowid() AS id');
+      return row['id'] as int;
+    });
+  }
+
+  @override
+  Future<void> deleteInsulinPen(int id) {
+    return _database.writeTransaction((transaction) async {
+      await transaction.execute('DELETE FROM LAPICERA_INSULINA WHERE id = ?', [
+        id,
+      ]);
+    });
+  }
+
   RecipeListItem _buildRecipeListItem(
     Map<String, Object?> recipe,
     List<Map<String, Object?>> ingredients,
@@ -687,4 +731,10 @@ class SqliteFoodRepository implements FoodRepository {
 String? _cleanNote(String? note) {
   final cleanNote = note?.trim();
   return cleanNote == null || cleanNote.isEmpty ? null : cleanNote;
+}
+
+String _formatDateOnly(DateTime date) {
+  final day = date.day.toString().padLeft(2, '0');
+  final month = date.month.toString().padLeft(2, '0');
+  return '${date.year}-$month-$day';
 }

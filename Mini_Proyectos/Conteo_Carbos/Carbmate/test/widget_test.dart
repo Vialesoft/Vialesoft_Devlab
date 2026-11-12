@@ -317,4 +317,13 @@ class _FakeFoodRepository implements FoodRepository {
 
   @override
   Future<void> setRecipeFavorite(int id, bool isFavorite) async {}
+
+  @override
+  Future<List<InsulinPen>> loadInsulinPens() async => const [];
+
+  @override
+  Future<int> addInsulinPen(InsulinPenType type, DateTime openedOn) async => 1;
+
+  @override
+  Future<void> deleteInsulinPen(int id) async {}
 }

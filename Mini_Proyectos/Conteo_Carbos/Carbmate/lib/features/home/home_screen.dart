@@ -6,6 +6,7 @@ import 'package:carbmate/features/calculator/calculator_screen.dart';
 import 'package:carbmate/features/catalog/catalog_maintenance_screen.dart';
 import 'package:carbmate/features/foods/create_food_screen.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
+import 'package:carbmate/features/insulin_pens/insulin_pen_screen.dart';
 import 'package:carbmate/features/recipes/recipe_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -107,6 +108,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _openInsulinPens() async {
+    Navigator.of(context).pop();
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => InsulinPenScreen(repository: widget.repository),
+      ),
+    );
+  }
+
   Future<void> _openCatalogMaintenance(
     CatalogKind kind,
     String title,
@@ -183,6 +193,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: const Icon(Icons.menu_book_outlined),
                 title: const Text('Recetas'),
                 onTap: _openRecipes,
+              ),
+              ListTile(
+                leading: const Icon(Icons.medication_outlined),
+                title: const Text('Lapiceras de insulina'),
+                onTap: _openInsulinPens,
               ),
               const Divider(),
               ListTile(

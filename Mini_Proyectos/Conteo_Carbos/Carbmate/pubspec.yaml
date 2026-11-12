@@ -11,6 +11,9 @@ dependencies:
     sdk: flutter
   path_provider: ^2.1.6
   sqlite_async: ^0.14.6
+  flutter_local_notifications: ^22.3.3
+  flutter_timezone: ^5.1.1
+  timezone: ^0.11.2
 
 dev_dependencies:
   flutter_test:
@@ -29,5 +32,6 @@ flutter:
     - assets/database/migrations/add_recipes.sql
     - assets/database/migrations/add_recipe_ingredient_notes.sql
     - assets/database/migrations/add_recipe_favorites_and_cooked_weight.sql
+    - assets/database/migrations/add_insulin_pens.sql
     - assets/images/carbmate_mascot.png
     - assets/images/carbmate_launcher.png

@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:carbmate/core/text/search_text.dart';
+import 'package:carbmate/features/foods/create_food_screen.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
 
 class RecipeEditScreen extends StatefulWidget {
-  const RecipeEditScreen({
-    super.key,
-    required this.repository,
-    this.recipeId,
-  });
+  const RecipeEditScreen({super.key, required this.repository, this.recipeId});
 
   final FoodRepository repository;
   final int? recipeId;
@@ -116,15 +113,15 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
     setState(() => _isSaving = true);
     try {
       final ingredients = [
-          for (final ingredient in _ingredients)
-            RecipeIngredientDraft(
-              foodId: ingredient.foodId,
-              measureId: ingredient.measureId,
-              quantity: ingredient.quantity,
-              isGrams: ingredient.isGrams,
-              note: ingredient.note,
-            ),
-        ];
+        for (final ingredient in _ingredients)
+          RecipeIngredientDraft(
+            foodId: ingredient.foodId,
+            measureId: ingredient.measureId,
+            quantity: ingredient.quantity,
+            isGrams: ingredient.isGrams,
+            note: ingredient.note,
+          ),
+      ];
       if (widget.recipeId == null) {
         await widget.repository.saveRecipe(
           name: _nameController.text.trim(),
@@ -482,14 +479,10 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
     return total;
   }
 
-  bool get _hasUnknownCheckedWeight => _checkedIndices.any(
-    (index) => _ingredients[index].gramsPerUse == null,
-  );
+  bool get _hasUnknownCheckedWeight =>
+      _checkedIndices.any((index) => _ingredients[index].gramsPerUse == null);
 
-  Future<void> _editIngredient(
-    _RecipeEditorData data, {
-    int? index,
-  }) async {
+  Future<void> _editIngredient(_RecipeEditorData data, {int? index}) async {
     final result = await showDialog<_IngredientEditResult>(
       context: context,
       builder: (_) => _RecipeIngredientDialog(
@@ -553,9 +546,8 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
       if (!mounted) return;
       _originalIngredients = List.of(_ingredients);
       setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Receta actualizada.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Receta actualizada.')));
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSaving = false);
@@ -587,9 +579,8 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
       );
       if (!mounted) return;
       setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Receta "$name" guardada.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Receta "$name" guardada.')));
     } catch (_) {
       if (!mounted) return;
       setState(() => _isSaving = false);
@@ -690,13 +681,12 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
 
   String _quantityLabel(RecipeIngredientDetails ingredient) {
     if (ingredient.isGrams) return '${_formatNumber(ingredient.quantity)} g';
-    final quantity = '${_formatNumber(ingredient.quantity)} x ${ingredient.measureName}';
+    final quantity =
+        '${_formatNumber(ingredient.quantity)} x ${ingredient.measureName}';
     final grams = ingredient.gramsPerUse == null
         ? null
         : ingredient.quantity * ingredient.gramsPerUse!;
-    return grams == null
-        ? quantity
-        : '$quantity - ${_formatNumber(grams)} g';
+    return grams == null ? quantity : '$quantity - ${_formatNumber(grams)} g';
   }
 
   @override
@@ -721,72 +711,67 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
         return Scaffold(
           appBar: AppBar(title: Text('Cocinar: ${data.recipe.name}')),
           body: ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
-                  itemCount: _ingredients.isEmpty
-                      ? 2
-                      : _ingredients.length + 1,
-                  separatorBuilder: (_, _) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    if (_ingredients.isEmpty && index == 0) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Text('La receta no tiene ingredientes.'),
-                      );
-                    }
-                    if (index == _ingredients.length ||
-                        (_ingredients.isEmpty && index == 1)) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: OutlinedButton.icon(
-                          key: const Key('cook-add-ingredient'),
-                          onPressed: _isSaving
-                              ? null
-                              : () => _editIngredient(data),
-                          icon: const Icon(Icons.add),
-                          label: const Text('Agregar alimento'),
-                        ),
-                      );
-                    }
-                    final ingredient = _ingredients[index];
-                    final carbohydrates = ingredient.carbohydratesPerUse == null
-                        ? null
-                        : ingredient.quantity *
-                              ingredient.carbohydratesPerUse!;
-                    final note = ingredient.note?.trim();
-                    return ListTile(
-                      key: ValueKey('cook-ingredient-$index'),
-                      leading: Checkbox(
-                        value: _checkedIndices.contains(index),
-                        onChanged: _isSaving
-                            ? null
-                            : (checked) => setState(() {
-                                if (checked == true) {
-                                  _checkedIndices.add(index);
-                                } else {
-                                  _checkedIndices.remove(index);
-                                }
-                              }),
-                      ),
-                      title: Text(ingredient.foodName),
-                      subtitle: Text(
-                        '${_quantityLabel(ingredient)}${carbohydrates == null ? '' : ' · CHO: ${_formatNumber(carbohydrates)} g'}${note == null || note.isEmpty ? '' : '\n$note'}',
-                        style: note == null || note.isEmpty
-                            ? null
-                            : const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      trailing: IconButton(
-                        tooltip: 'Editar ingrediente',
-                        onPressed: _isSaving
-                            ? null
-                            : () => _editIngredient(data, index: index),
-                        icon: const Icon(Icons.edit_outlined),
-                      ),
-                      onTap: _isSaving
-                          ? null
-                          : () => _editIngredient(data, index: index),
-                    );
-                  },
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
+            itemCount: _ingredients.isEmpty ? 2 : _ingredients.length + 1,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              if (_ingredients.isEmpty && index == 0) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Text('La receta no tiene ingredientes.'),
+                );
+              }
+              if (index == _ingredients.length ||
+                  (_ingredients.isEmpty && index == 1)) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: OutlinedButton.icon(
+                    key: const Key('cook-add-ingredient'),
+                    onPressed: _isSaving ? null : () => _editIngredient(data),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Agregar alimento'),
+                  ),
+                );
+              }
+              final ingredient = _ingredients[index];
+              final carbohydrates = ingredient.carbohydratesPerUse == null
+                  ? null
+                  : ingredient.quantity * ingredient.carbohydratesPerUse!;
+              final note = ingredient.note?.trim();
+              return ListTile(
+                key: ValueKey('cook-ingredient-$index'),
+                leading: Checkbox(
+                  value: _checkedIndices.contains(index),
+                  onChanged: _isSaving
+                      ? null
+                      : (checked) => setState(() {
+                          if (checked == true) {
+                            _checkedIndices.add(index);
+                          } else {
+                            _checkedIndices.remove(index);
+                          }
+                        }),
                 ),
+                title: Text(ingredient.foodName),
+                subtitle: Text(
+                  '${_quantityLabel(ingredient)}${carbohydrates == null ? '' : ' · CHO: ${_formatNumber(carbohydrates)} g'}${note == null || note.isEmpty ? '' : '\n$note'}',
+                  style: note == null || note.isEmpty
+                      ? null
+                      : const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                trailing: IconButton(
+                  tooltip: 'Editar ingrediente',
+                  onPressed: _isSaving
+                      ? null
+                      : () => _editIngredient(data, index: index),
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+                onTap: _isSaving
+                    ? null
+                    : () => _editIngredient(data, index: index),
+              );
+            },
+          ),
           bottomNavigationBar: SafeArea(
             top: false,
             child: Container(
@@ -795,9 +780,7 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
                   top: BorderSide(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
+                    color: Theme.of(context).colorScheme.primary
                         .withValues(alpha: 0.35),
                   ),
                 ),
@@ -840,9 +823,7 @@ class _RecipeCookScreenState extends State<RecipeCookScreen> {
                   const SizedBox(height: 8),
                   FilledButton.icon(
                     key: const Key('cook-save-preparation'),
-                    onPressed: _isSaving
-                        ? null
-                        : () => _savePreparation(data),
+                    onPressed: _isSaving ? null : () => _savePreparation(data),
                     icon: const Icon(Icons.save_alt),
                     label: const Text('Guardar preparación'),
                   ),

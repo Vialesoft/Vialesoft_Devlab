@@ -77,6 +77,14 @@ class AppDatabase {
         );
         await transaction.executeMultiple(migration);
       }),
+    )
+    ..add(
+      SqliteMigration(9, (transaction) async {
+        final migration = await rootBundle.loadString(
+          'assets/database/migrations/add_insulin_pens.sql',
+        );
+        await transaction.executeMultiple(migration);
+      }),
     );
 
   final SqliteDatabase connection;
