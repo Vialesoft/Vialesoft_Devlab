@@ -53,7 +53,9 @@ class _CarbmateAppState extends State<CarbmateApp> {
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: () {
-                          setState(() => _repositoryFuture = _loadRepository());
+                          setState(() {
+                            _repositoryFuture = _loadRepository();
+                          });
                         },
                         child: const Text('Reintentar'),
                       ),

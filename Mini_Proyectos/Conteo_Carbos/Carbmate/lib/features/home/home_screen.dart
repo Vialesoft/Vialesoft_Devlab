@@ -6,6 +6,7 @@ import 'package:carbmate/features/calculator/calculator_screen.dart';
 import 'package:carbmate/features/catalog/catalog_maintenance_screen.dart';
 import 'package:carbmate/features/foods/create_food_screen.dart';
 import 'package:carbmate/features/foods/domain/food_repository.dart';
+import 'package:carbmate/features/recipes/recipe_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.repository});
@@ -92,9 +93,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openAbout() {
     Navigator.of(context).pop();
-    Navigator.of(context).push<void>(
+    Navigator.of(
+      context,
+    ).push<void>(MaterialPageRoute<void>(builder: (_) => const _AboutScreen()));
+  }
+
+  Future<void> _openRecipes() async {
+    Navigator.of(context).pop();
+    await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => const _AboutScreen(),
+        builder: (_) => RecipeListScreen(repository: widget.repository),
       ),
     );
   }
@@ -171,6 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icons.scale_outlined,
                 ),
               ),
+              ListTile(
+                leading: const Icon(Icons.menu_book_outlined),
+                title: const Text('Recetas'),
+                onTap: _openRecipes,
+              ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.info_outline),
@@ -220,8 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: switch (_foodListFilter) {
                           _FoodListFilter.all => null,
                           _FoodListFilter.favorites => Colors.amber.shade800,
-                          _FoodListFilter.preparations =>
-                            Theme.of(context).colorScheme.primary,
+                          _FoodListFilter.preparations => Theme.of(
+                            context,
+                          ).colorScheme.primary,
                         },
                       ),
                       itemBuilder: (context) => const [

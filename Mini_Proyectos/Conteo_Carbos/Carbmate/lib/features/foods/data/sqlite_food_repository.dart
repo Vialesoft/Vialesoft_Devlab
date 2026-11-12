@@ -36,9 +36,7 @@ class SqliteFoodRepository implements FoodRepository {
             'THEN 1 ELSE 0 END AS eliminable FROM $table c '
             'WHERE c.eliminado_en IS NULL ORDER BY c.nombre COLLATE NOCASE',
     };
-    final rows = await _database.getAll(
-      select,
-    );
+    final rows = await _database.getAll(select);
     return [
       for (final row in rows)
         MaintenanceCatalogEntry(
@@ -366,6 +364,323 @@ class SqliteFoodRepository implements FoodRepository {
       );
       await transaction.execute('DELETE FROM PRODUCTO WHERE id = ?', [id]);
     });
+  }
+
+  @override
+  Future<void> saveRecipe({
+    required String name,
+    required List<RecipeIngredientDraft> ingredients,
+    String? instructions,
+    String? note,
+    double? cookedWeightGrams,
+  }) {
+    if (ingredients.isEmpty) {
+      throw ArgumentError('La receta debe tener al menos un ingrediente.');
+    }
+    return _database.writeTransaction((transaction) async {
+      await transaction.execute(
+        'INSERT INTO RECETA '
+        '(nombre, instrucciones, nota, creado_en, peso_cocido) '
+        'VALUES (?, ?, ?, ?, ?)',
+        [
+          name.trim(),
+          _cleanNote(instructions),
+          _cleanNote(note),
+          DateTime.now().toIso8601String(),
+          cookedWeightGrams,
+        ],
+      );
+      final row = await transaction.get('SELECT last_insert_rowid() AS id');
+      final recipeId = row['id'] as int;
+      for (var index = 0; index < ingredients.length; index++) {
+        final ingredient = ingredients[index];
+        await transaction.execute(
+          'INSERT INTO RECETA_INGREDIENTE '
+          '(id_receta, id_prod, id_med, cantidad, es_gramos, orden, nota) '
+          'VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [
+            recipeId,
+            ingredient.foodId,
+            ingredient.measureId,
+            ingredient.quantity,
+            ingredient.isGrams ? 1 : 0,
+            index,
+            _cleanNote(ingredient.note),
+          ],
+        );
+      }
+    });
+  }
+
+  @override
+  Future<List<RecipeListItem>> loadRecipes() async {
+    final recipes = await _database.getAll(
+      'SELECT id, nombre, creado_en, es_favorita, peso_cocido FROM RECETA '
+      'ORDER BY es_favorita DESC, nombre COLLATE NOCASE',
+    );
+    final ingredients = await _database.getAll(
+      'SELECT ri.id_receta, ri.cantidad, ri.es_gramos, '
+      'pm.grs_prod AS medida_gramos, pm.grs_cho AS medida_cho, '
+      '(SELECT ref.grs_prod FROM PRODUCTO_MEDIDA ref '
+      'JOIN MEDIDA rm ON rm.id = ref.id_med '
+      'WHERE ref.id_prod = ri.id_prod AND ref.grs_prod > 0 '
+      'AND ref.grs_cho IS NOT NULL AND rm.eliminado_en IS NULL '
+      "ORDER BY CASE WHEN rm.nombre = '100 g' THEN 0 ELSE 1 END, ref.id_med "
+      'LIMIT 1) AS referencia_gramos, '
+      '(SELECT ref.grs_cho FROM PRODUCTO_MEDIDA ref '
+      'JOIN MEDIDA rm ON rm.id = ref.id_med '
+      'WHERE ref.id_prod = ri.id_prod AND ref.grs_prod > 0 '
+      'AND ref.grs_cho IS NOT NULL AND rm.eliminado_en IS NULL '
+      "ORDER BY CASE WHEN rm.nombre = '100 g' THEN 0 ELSE 1 END, ref.id_med "
+      'LIMIT 1) AS referencia_cho '
+      'FROM RECETA_INGREDIENTE ri '
+      'JOIN PRODUCTO_MEDIDA pm '
+      'ON pm.id_prod = ri.id_prod AND pm.id_med = ri.id_med '
+      'JOIN MEDIDA m ON m.id = ri.id_med AND m.eliminado_en IS NULL '
+      'ORDER BY ri.id_receta, ri.orden',
+    );
+
+    final ingredientsByRecipe = <int, List<Map<String, Object?>>>{};
+    for (final ingredient in ingredients) {
+      ingredientsByRecipe
+          .putIfAbsent(ingredient['id_receta'] as int, () => [])
+          .add(ingredient);
+    }
+
+    return [
+      for (final recipe in recipes)
+        _buildRecipeListItem(
+          recipe,
+          ingredientsByRecipe[recipe['id'] as int] ?? const [],
+        ),
+    ];
+  }
+
+  @override
+  Future<RecipeDetails?> loadRecipe(int id) async {
+    final recipes = await _database.getAll(
+      'SELECT id, nombre, instrucciones, nota, peso_cocido, es_favorita '
+      'FROM RECETA WHERE id = ?',
+      [id],
+    );
+    if (recipes.isEmpty) return null;
+    final ingredients = await _database.getAll(
+      'SELECT ri.id_prod, p.nombre AS alimento, ri.id_med, m.nombre AS medida, '
+      'ri.cantidad, ri.es_gramos, ri.nota, '
+      'pm.grs_prod AS medida_gramos, pm.grs_cho AS medida_cho, '
+      '(SELECT ref.grs_prod FROM PRODUCTO_MEDIDA ref '
+      'JOIN MEDIDA rm ON rm.id = ref.id_med '
+      'WHERE ref.id_prod = ri.id_prod AND ref.grs_prod > 0 '
+      'AND ref.grs_cho IS NOT NULL AND rm.eliminado_en IS NULL '
+      "ORDER BY CASE WHEN rm.nombre = '100 g' THEN 0 ELSE 1 END, ref.id_med "
+      'LIMIT 1) AS referencia_gramos, '
+      '(SELECT ref.grs_cho FROM PRODUCTO_MEDIDA ref '
+      'JOIN MEDIDA rm ON rm.id = ref.id_med '
+      'WHERE ref.id_prod = ri.id_prod AND ref.grs_prod > 0 '
+      'AND ref.grs_cho IS NOT NULL AND rm.eliminado_en IS NULL '
+      "ORDER BY CASE WHEN rm.nombre = '100 g' THEN 0 ELSE 1 END, ref.id_med "
+      'LIMIT 1) AS referencia_cho '
+      'FROM RECETA_INGREDIENTE ri '
+      'JOIN PRODUCTO p ON p.id = ri.id_prod '
+      'JOIN MEDIDA m ON m.id = ri.id_med '
+      'JOIN PRODUCTO_MEDIDA pm '
+      'ON pm.id_prod = ri.id_prod AND pm.id_med = ri.id_med '
+      'WHERE ri.id_receta = ? ORDER BY ri.orden',
+      [id],
+    );
+    final recipe = recipes.single;
+    return RecipeDetails(
+      id: recipe['id'] as int,
+      name: recipe['nombre'] as String,
+      instructions: recipe['instrucciones'] as String?,
+      note: recipe['nota'] as String?,
+      cookedWeightGrams: (recipe['peso_cocido'] as num?)?.toDouble(),
+      isFavorite: recipe['es_favorita'] == 1,
+      ingredients: [
+        for (final row in ingredients) _buildRecipeIngredientDetails(row),
+      ],
+    );
+  }
+
+  RecipeIngredientDetails _buildRecipeIngredientDetails(
+    Map<String, Object?> row,
+  ) {
+    final isGrams = row['es_gramos'] == 1;
+    final measureGrams = (row['medida_gramos'] as num?)?.toDouble();
+    final measureCarbohydrates = (row['medida_cho'] as num?)?.toDouble();
+    final referenceGrams = (row['referencia_gramos'] as num?)?.toDouble();
+    final referenceCarbohydrates = (row['referencia_cho'] as num?)?.toDouble();
+
+    double? carbohydratesPerUse;
+    double? gramsPerUse;
+    if (isGrams) {
+      final hasMeasureRatio =
+          measureGrams != null &&
+          measureGrams > 0 &&
+          measureCarbohydrates != null;
+      final grams = hasMeasureRatio ? measureGrams : referenceGrams;
+      final carbohydrates = hasMeasureRatio
+          ? measureCarbohydrates
+          : referenceCarbohydrates;
+      if (grams != null && grams > 0 && carbohydrates != null) {
+        carbohydratesPerUse = carbohydrates / grams;
+      }
+      gramsPerUse = 1;
+    } else {
+      carbohydratesPerUse = measureCarbohydrates;
+      if (carbohydratesPerUse == null &&
+          measureGrams != null &&
+          measureGrams > 0 &&
+          referenceGrams != null &&
+          referenceGrams > 0 &&
+          referenceCarbohydrates != null) {
+        carbohydratesPerUse =
+            measureGrams * referenceCarbohydrates / referenceGrams;
+      }
+      gramsPerUse = measureGrams;
+    }
+
+    return RecipeIngredientDetails(
+      foodId: row['id_prod'] as int,
+      foodName: row['alimento'] as String,
+      measureId: row['id_med'] as int,
+      measureName: isGrams ? 'Gramos' : row['medida'] as String,
+      quantity: (row['cantidad'] as num).toDouble(),
+      isGrams: isGrams,
+      carbohydratesPerUse: carbohydratesPerUse,
+      gramsPerUse: gramsPerUse,
+      note: row['nota'] as String?,
+    );
+  }
+
+  @override
+  Future<void> updateRecipe({
+    required int id,
+    required String name,
+    required List<RecipeIngredientDraft> ingredients,
+    String? instructions,
+    String? note,
+    double? cookedWeightGrams,
+  }) {
+    if (ingredients.isEmpty) {
+      throw ArgumentError('La receta debe tener al menos un ingrediente.');
+    }
+    return _database.writeTransaction((transaction) async {
+      await transaction.execute(
+        'UPDATE RECETA SET nombre = ?, instrucciones = ?, nota = ?, '
+        'peso_cocido = ? WHERE id = ?',
+        [
+          name.trim(),
+          _cleanNote(instructions),
+          _cleanNote(note),
+          cookedWeightGrams,
+          id,
+        ],
+      );
+      await transaction.execute(
+        'DELETE FROM RECETA_INGREDIENTE WHERE id_receta = ?',
+        [id],
+      );
+      for (var index = 0; index < ingredients.length; index++) {
+        final ingredient = ingredients[index];
+        await transaction.execute(
+          'INSERT INTO RECETA_INGREDIENTE '
+          '(id_receta, id_prod, id_med, cantidad, es_gramos, orden, nota) '
+          'VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [
+            id,
+            ingredient.foodId,
+            ingredient.measureId,
+            ingredient.quantity,
+            ingredient.isGrams ? 1 : 0,
+            index,
+            _cleanNote(ingredient.note),
+          ],
+        );
+      }
+    });
+  }
+
+  @override
+  Future<void> setRecipeFavorite(int id, bool isFavorite) {
+    return _database.writeTransaction((transaction) async {
+      await transaction.execute(
+        'UPDATE RECETA SET es_favorita = ? WHERE id = ?',
+        [isFavorite ? 1 : 0, id],
+      );
+    });
+  }
+
+  RecipeListItem _buildRecipeListItem(
+    Map<String, Object?> recipe,
+    List<Map<String, Object?>> ingredients,
+  ) {
+    var totalCarbohydrates = 0.0;
+    var totalWeight = 0.0;
+    var hasUnknownCarbohydrates = false;
+    var hasUnknownWeight = false;
+
+    for (final ingredient in ingredients) {
+      final quantity = (ingredient['cantidad'] as num).toDouble();
+      final isGrams = ingredient['es_gramos'] == 1;
+      final measureGrams = (ingredient['medida_gramos'] as num?)?.toDouble();
+      final measureCarbohydrates = (ingredient['medida_cho'] as num?)
+          ?.toDouble();
+      final referenceGrams = (ingredient['referencia_gramos'] as num?)
+          ?.toDouble();
+      final referenceCarbohydrates = (ingredient['referencia_cho'] as num?)
+          ?.toDouble();
+
+      double? carbohydrates;
+      if (isGrams) {
+        final hasMeasureRatio =
+            measureGrams != null &&
+            measureGrams > 0 &&
+            measureCarbohydrates != null;
+        final grams = hasMeasureRatio ? measureGrams : referenceGrams;
+        final cho = hasMeasureRatio
+            ? measureCarbohydrates
+            : referenceCarbohydrates;
+        if (grams != null && grams > 0 && cho != null) {
+          carbohydrates = quantity * cho / grams;
+        }
+        totalWeight += quantity;
+      } else {
+        if (measureCarbohydrates != null) {
+          carbohydrates = quantity * measureCarbohydrates;
+        } else if (measureGrams != null &&
+            measureGrams > 0 &&
+            referenceGrams != null &&
+            referenceGrams > 0 &&
+            referenceCarbohydrates != null) {
+          carbohydrates =
+              quantity * measureGrams * referenceCarbohydrates / referenceGrams;
+        }
+        if (measureGrams == null) {
+          hasUnknownWeight = true;
+        } else {
+          totalWeight += quantity * measureGrams;
+        }
+      }
+
+      if (carbohydrates == null) {
+        hasUnknownCarbohydrates = true;
+      } else {
+        totalCarbohydrates += carbohydrates;
+      }
+    }
+
+    return RecipeListItem(
+      id: recipe['id'] as int,
+      name: recipe['nombre'] as String,
+      createdAt: DateTime.parse(recipe['creado_en'] as String),
+      totalCarbohydrates: hasUnknownCarbohydrates ? null : totalCarbohydrates,
+      estimatedWeightGrams: ingredients.isEmpty ? null : totalWeight,
+      cookedWeightGrams: (recipe['peso_cocido'] as num?)?.toDouble(),
+      hasUnknownWeight: hasUnknownWeight,
+      hasUnknownCarbohydrates: hasUnknownCarbohydrates,
+      isFavorite: recipe['es_favorita'] == 1,
+    );
   }
 }
 

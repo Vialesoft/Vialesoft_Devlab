@@ -53,6 +53,30 @@ class AppDatabase {
         );
         await transaction.executeMultiple(migration);
       }),
+    )
+    ..add(
+      SqliteMigration(6, (transaction) async {
+        final migration = await rootBundle.loadString(
+          'assets/database/migrations/add_recipes.sql',
+        );
+        await transaction.executeMultiple(migration);
+      }),
+    )
+    ..add(
+      SqliteMigration(7, (transaction) async {
+        final migration = await rootBundle.loadString(
+          'assets/database/migrations/add_recipe_ingredient_notes.sql',
+        );
+        await transaction.executeMultiple(migration);
+      }),
+    )
+    ..add(
+      SqliteMigration(8, (transaction) async {
+        final migration = await rootBundle.loadString(
+          'assets/database/migrations/add_recipe_favorites_and_cooked_weight.sql',
+        );
+        await transaction.executeMultiple(migration);
+      }),
     );
 
   final SqliteDatabase connection;

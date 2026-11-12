@@ -201,12 +201,7 @@ void main() {
   testWidgets('filtra la lista de alimentos por preparaciones', (tester) async {
     final repository = _FakeFoodRepository()
       ..foods = const [
-        FoodListItem(
-          id: 1,
-          name: 'Leche',
-          brandName: null,
-          tags: [],
-        ),
+        FoodListItem(id: 1, name: 'Leche', brandName: null, tags: []),
         FoodListItem(
           id: 2,
           name: 'Pan de banana (11/11/26)',
@@ -294,4 +289,32 @@ class _FakeFoodRepository implements FoodRepository {
 
   @override
   Future<void> deleteFood(int id) async {}
+
+  @override
+  Future<void> saveRecipe({
+    required String name,
+    required List<RecipeIngredientDraft> ingredients,
+    String? instructions,
+    String? note,
+    double? cookedWeightGrams,
+  }) async {}
+
+  @override
+  Future<List<RecipeListItem>> loadRecipes() async => const [];
+
+  @override
+  Future<RecipeDetails?> loadRecipe(int id) async => null;
+
+  @override
+  Future<void> updateRecipe({
+    required int id,
+    required String name,
+    required List<RecipeIngredientDraft> ingredients,
+    String? instructions,
+    String? note,
+    double? cookedWeightGrams,
+  }) async {}
+
+  @override
+  Future<void> setRecipeFavorite(int id, bool isFavorite) async {}
 }

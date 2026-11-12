@@ -26,5 +26,8 @@ flutter:
     - assets/database/migrations/add_notes_to_brands_and_tags.sql
     - assets/database/migrations/add_food_favorites_and_notes.sql
     - assets/database/migrations/add_preparation_food_type.sql
+    - assets/database/migrations/add_recipes.sql
+    - assets/database/migrations/add_recipe_ingredient_notes.sql
+    - assets/database/migrations/add_recipe_favorites_and_cooked_weight.sql
     - assets/images/carbmate_mascot.png
     - assets/images/carbmate_launcher.png

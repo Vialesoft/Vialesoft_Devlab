@@ -1,0 +1,7 @@
+ALTER TABLE RECETA
+ADD COLUMN es_favorita INTEGER NOT NULL DEFAULT 0
+CHECK (es_favorita IN (0, 1));
+
+ALTER TABLE RECETA
+ADD COLUMN peso_cocido REAL
+CHECK (peso_cocido IS NULL OR peso_cocido > 0);

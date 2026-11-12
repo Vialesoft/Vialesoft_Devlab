@@ -103,6 +103,31 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     }
   }
 
+  Future<void> _saveAsRecipe() async {
+    if (_entries.isEmpty) return;
+    final name = await showDialog<String>(
+      context: context,
+      builder: (_) => const _RecipeNameDialog(),
+    );
+    if (name == null || !mounted) return;
+
+    await widget.repository.saveRecipe(
+      name: name,
+      ingredients: [
+        for (final entry in _entries)
+          RecipeIngredientDraft(
+            foodId: entry.food.id,
+            measureId: entry.measure.measureId!,
+            quantity: entry.quantity,
+            isGrams: entry.measure.isGrams,
+          ),
+      ],
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Receta "$name" guardada.')));
+  }
+
   Future<void> _selectFood(FoodListItem food, _CalculatorData data) async {
     final details = await widget.repository.loadFood(food.id);
     if (!mounted || details == null) return;
@@ -122,10 +147,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
     final result = await showDialog<_IngredientDialogResult>(
       context: context,
-      builder: (_) => _AddIngredientDialog(
-        food: food,
-        measureOptions: measureOptions,
-      ),
+      builder: (_) =>
+          _AddIngredientDialog(food: food, measureOptions: measureOptions),
     );
     final entry = result?.entry;
     if (entry != null && mounted) {
@@ -203,6 +226,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         name: 'Gramos',
         carbohydratesPerUse: totalCarbohydrates / totalGrams,
         gramsPerUse: 1,
+        measureId: existing.measure.measureId ?? incoming.measure.measureId,
         isGrams: true,
       ),
       quantity: totalGrams,
@@ -215,9 +239,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   ) {
     final referenceMeasures = food.measures.where((measure) {
       final grams = measure.productGrams;
-      return grams != null &&
-          grams > 0 &&
-          measure.carbohydrateGrams != null;
+      return grams != null && grams > 0 && measure.carbohydrateGrams != null;
     }).toList();
     FoodMeasureDraft? reference;
     for (final measure in referenceMeasures) {
@@ -233,6 +255,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       options.add(
         _CalculatorMeasureOption(
           name: 'Gramos',
+          measureId: reference.measureId,
           carbohydratesPerUse:
               reference.carbohydrateGrams! / reference.productGrams!,
           gramsPerUse: 1,
@@ -268,9 +291,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     return options;
   }
 
-  bool _isWeightMeasure(String name) =>
-      RegExp(r'^\s*\d+(?:[,.]\d+)?\s*g\s*$', caseSensitive: false)
-          .hasMatch(name);
+  bool _isWeightMeasure(String name) => RegExp(
+    r'^\s*\d+(?:[,.]\d+)?\s*g\s*$',
+    caseSensitive: false,
+  ).hasMatch(name);
 
   @override
   Widget build(BuildContext context) {
@@ -475,16 +499,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                               child: Icon(
                                                 Icons.info_outline,
                                                 size: 16,
-                                                color:
-                                                    Colors.orange.shade700,
+                                                color: Colors.orange.shade700,
                                               ),
                                             ),
                                           ),
                                         Text(
                                           'CHO:',
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.bodySmall,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
                                         ),
                                         Text(
                                           '${_formatNumber(entry.totalCarbohydrates)}g',
@@ -526,10 +549,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _TotalRow(
-                label: 'Peso total',
-                value: _totalWeightLabel,
-              ),
+              _TotalRow(label: 'Peso total', value: _totalWeightLabel),
               const SizedBox(height: 8),
               _TotalRow(
                 label: 'Carbohidratos totales',
@@ -538,6 +558,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ),
               if (_entries.isNotEmpty) ...[
                 const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  key: const Key('save-as-recipe'),
+                  onPressed: _saveAsRecipe,
+                  icon: const Icon(Icons.menu_book_outlined),
+                  label: const Text('Guardar receta'),
+                ),
+                const SizedBox(height: 8),
                 OutlinedButton.icon(
                   key: const Key('save-as-preparation'),
                   onPressed: _saveAsPreparation,
@@ -566,9 +593,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     (total, entry) => total + entry.quantity * (entry.measure.gramsPerUse ?? 0),
   );
 
-  String get _totalWeightLabel => _hasUnknownWeight
-      ? '—'
-      : '${_formatNumber(_totalWeight)} g';
+  String get _totalWeightLabel =>
+      _hasUnknownWeight ? '—' : '${_formatNumber(_totalWeight)} g';
 
   void _clearEntries() {
     setState(_entries.clear);
@@ -578,6 +604,57 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
 class CalculatorSession {
   final List<_CalculatorEntry> _entries = [];
+}
+
+class _RecipeNameDialog extends StatefulWidget {
+  const _RecipeNameDialog();
+
+  @override
+  State<_RecipeNameDialog> createState() => _RecipeNameDialogState();
+}
+
+class _RecipeNameDialogState extends State<_RecipeNameDialog> {
+  final _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _nameController.text.trim();
+    if (name.isNotEmpty) Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Guardar receta'),
+      content: TextField(
+        key: const Key('recipe-name'),
+        controller: _nameController,
+        autofocus: true,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: const InputDecoration(
+          labelText: 'Nombre',
+          border: OutlineInputBorder(),
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        FilledButton(
+          key: const Key('confirm-save-recipe'),
+          onPressed: _submit,
+          child: const Text('Guardar'),
+        ),
+      ],
+    );
+  }
 }
 
 class _FoodSearchResult extends StatelessWidget {
@@ -615,11 +692,7 @@ class _FoodSearchResult extends StatelessWidget {
           if (food.isPreparation)
             const Icon(Icons.restaurant_outlined, size: 20),
           if (food.isWeightEstimated)
-            Icon(
-              Icons.info_outline,
-              color: Colors.orange.shade700,
-              size: 18,
-            ),
+            Icon(Icons.info_outline, color: Colors.orange.shade700, size: 18),
           const Icon(Icons.chevron_right),
         ],
       ),
@@ -728,10 +801,7 @@ class _AddIngredientDialogState extends State<_AddIngredientDialog> {
               ),
               items: [
                 for (final option in widget.measureOptions)
-                  DropdownMenuItem(
-                    value: option,
-                    child: Text(option.name),
-                  ),
+                  DropdownMenuItem(value: option, child: Text(option.name)),
               ],
               onChanged: (value) {
                 if (value != null) setState(() => _selectedMeasure = value);
@@ -774,13 +844,10 @@ class _AddIngredientDialogState extends State<_AddIngredientDialog> {
         if (widget.initialEntry != null)
           IconButton(
             tooltip: 'Eliminar ingrediente',
-            onPressed: () => Navigator.of(context).pop(
-              const _IngredientDialogResult.deleted(),
-            ),
-            color: Theme.of(context)
-                .colorScheme
-                .error
-                .withValues(alpha: 0.72),
+            onPressed: () =>
+                Navigator.of(context)
+                    .pop(const _IngredientDialogResult.deleted()),
+            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.72),
             icon: const Icon(Icons.delete_outline),
           ),
         TextButton(
@@ -847,8 +914,7 @@ class _CalculatorEntry {
     return '$quantityText - ${_formatNumber(totalGrams)} g';
   }
 
-  double get totalCarbohydrates =>
-      quantity * measure.carbohydratesPerUse;
+  double get totalCarbohydrates => quantity * measure.carbohydratesPerUse;
 
   _CalculatorEntry copyWith({double? quantity}) => _CalculatorEntry(
     food: food,
@@ -880,14 +946,16 @@ class _TotalRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = emphasize
-        ? Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          )
+        ? Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.bold)
         : Theme.of(context).textTheme.bodyLarge;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [Text(label, style: style), Text(value, style: style)],
+      children: [
+        Text(label, style: style),
+        Text(value, style: style),
+      ],
     );
   }
 }
